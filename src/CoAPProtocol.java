@@ -3,20 +3,20 @@
 */
 public class CoAPProtocol
 {
-    /*
+    /**
     * 默认服务端口UDP
     */
-    public const int Port = 5683;
-    /*
+    public static final int Port = 5683;
+    /**
     * 默认DTLS服务端口
     */
-    public const int SecurePort = 5684;
-    //*
+    public static final int SecurePort = 5684;
+    /**
     * 默认服务端口TCP
     */
-    public const int TcpPort = 5685;
-    /*
+    public static final int TcpPort = 5685;
+    /**
     * 头部和内容分割数据
     */
-    public const byte HeaderEnd = 0xFF;
+    public static final byte HeaderEnd = (byte) 0xFF;
 }

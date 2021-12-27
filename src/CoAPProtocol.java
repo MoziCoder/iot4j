@@ -1,4 +1,4 @@
-//*
+/*
 * CoAP协议
 */</summary>
 public class CoAPProtocol
@@ -19,6 +19,4 @@ public class CoAPProtocol
     * 头部和内容分割数据
     */
     public const byte HeaderEnd = 0xFF;
-
-}
 }

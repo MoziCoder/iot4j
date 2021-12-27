@@ -1,8 +1,7 @@
 /*
  * CoAP传输时间参数
  */
-public class CoAPTransmissionConfig
-{
+public class CoAPTransmissionConfig {
     /*
      * 确认超时时间 seconds 取值推荐>1
      */
@@ -63,3 +62,4 @@ public class CoAPTransmissionConfig
      * Non-confirmable包MessageId重用周期
      */
     public int NON_LIFETIME = 145;
+}

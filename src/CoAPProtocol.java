@@ -1,6 +1,6 @@
 /*
 * CoAP协议
-*/</summary>
+*/
 public class CoAPProtocol
 {
     /*

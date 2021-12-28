@@ -3,7 +3,7 @@ package mozi.iot4j;
 /**
  * CoAP操作代码
 */
-public class CoAPCode
+public class CoAPCode extends AbsClassEnum
  {
     private String _name = "", _description;
 
@@ -27,14 +27,6 @@ public class CoAPCode
     public String getName(){
         return _name;
     }
-        /**
-         * 标识符
-        */
-       //protected override String Tag
-       //  {
-       //  get { return ((byte)(_category << 5) + _detail).ToString(); }
-       //  }
-
     /**
      *
     */
@@ -47,11 +39,16 @@ public class CoAPCode
          _detail = (byte)((pack << 3) >> 3);
      }
 
-      CoAPCode(String name, String description, byte category, byte detail)
-        {
+      protected CoAPCode(String name, String description, byte category, byte detail)
+      {
             _name = name;
             _description = description;
             _category = category;
             _detail = detail;
         }
-}
+
+     @Override
+     protected String getTag() {
+         return String.valueOf((byte)(_category << 5) + _detail);
+     }
+ }

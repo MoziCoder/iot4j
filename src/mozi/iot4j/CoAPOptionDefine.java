@@ -1,4 +1,62 @@
 package mozi.iot4j;
+
+ /**<summary>
+ * 内容格式
+ *</summary>
+ * CoAP Content-Formats Registry
+ *
+ *           0-255 | Expert Review
+ *        256-9999 | IETF Review or IESG Approval
+ *     10000-64999 | First Come First Served
+ *     65000-65535 | Experimental use(no operational use)
+ *
+ *     text/plain;              | -        |  0 | [RFC2046] [RFC3676]    |
+ *     charset=utf-8            |          |    | [RFC5147]              |
+ *     application/link-format  | -        | 40 | [RFC6690]              |
+ *     application/xml          | -        | 41 | [RFC3023]              |
+ *     application/octet-stream | -        | 42 | [RFC2045] [RFC2046]    |
+ *     application/exi          | -        | 47 | [REC-exi-20140211]     |
+ *     application/json         | -        | 50 | [RFC7159]              |
+ *     applicaiton/cbor         | -        | 60 | [RFC7159]              |
+ */
+public class ContentFormat extends AbsClassEnum
+        {
+private ushort _num = 0;
+private string _contentType = "";
+
+public string ContentType
+        {
+        get
+        {
+        return _contentType;
+        }
+        }
+
+public ushort OptionValue
+        {
+        get
+        {
+        return _num;
+        }
+        }
+public ushort Num { get { return _num; } }
+protected override string Tag => _num.ToString();
+
+public static ContentFormat TextPlain = new ContentFormat("text/plain", 0);
+public static ContentFormat LinkFormat = new ContentFormat("application/link-format", 40);
+public static ContentFormat XML = new ContentFormat("application/xml", 41);
+public static ContentFormat Stream = new ContentFormat("application/octet-stream", 42);
+public static ContentFormat EXI = new ContentFormat("application/exi", 47);
+public static ContentFormat JSON = new ContentFormat("application/json", 50);
+public static ContentFormat CBOR = new ContentFormat("applicaiton/cbor", 60);
+
+        internal ContentFormat(string contentType, ushort num)
+        {
+        _contentType = contentType;
+        _num = num;
+        }
+        }
+
 //CoAP Option Numbers Registry
 //|       0-255 | IETF Review or IESG Approval
 //|    256-2047 | Specification Required
@@ -43,33 +101,28 @@ package mozi.iot4j;
 
 // 特别注意，填入的Option Delta值不可能为15（0x0f）当遇到15时，该包无效
 
-public enum CoAPOptionDefine {
+public class CoAPOptionDefine extends AbsClassEnum {
 
-    IfMatch("If-Match", (char)1),
-    UriHost("Uri-Host",(char)3),
-    ETag("ETag",(char)4),
-    IfNoneMatch("If-None-Match",(char)5),
-    ExtendedTokenLength("Extended-Token-Length",(char)6),
-    UriPort("Uri-Port",(char)7),
-    LocationPath("Location-Path",(char)8),
-    UriPath("Uri-Path",(char)11),
-    ContentFormat("Content-Format",(char)12),
-    MaxAge("Max-Age",(char)14),
-    UriQuery("Uri-Query",(char)15),
-    Accept("Accept",(char)17),
-    LocationQuery("Location-Query",(char)20),
-
-    Block2("Block2",(char)23),    //RFC 7959
-    Block1("Block1",(char)27),    //RFC 7959
-
-    Size2("Size2",(char)28), //RFC 7959
-
-    ProxyUri("Proxy-Uri",(char)35),
-    ProxyScheme("Proxy-Scheme",(char)39),
-
-    Size1("Size1",(char)60),
-
-    Unknown("Unknown",(char)0);
+    public static final CoAPOptionDefine   IfMatch=new CoAPOptionDefine("If-Match", (char)1);
+    public static final CoAPOptionDefine   UriHost=new CoAPOptionDefine("Uri-Host", (char)3);
+    public static final CoAPOptionDefine   ETag=new CoAPOptionDefine("ETag", (char)4);
+    public static final CoAPOptionDefine   IfNoneMatch=new CoAPOptionDefine("If-None-Match", (char)5);
+    public static final CoAPOptionDefine   ExtendedTokenLength=new CoAPOptionDefine("Extended-Token-Length",(char)6);
+    public static final CoAPOptionDefine   UriPort=new CoAPOptionDefine("Uri-Port", (char)7);
+    public static final CoAPOptionDefine   LocationPath=new CoAPOptionDefine("Location-Path", (char)8);
+    public static final CoAPOptionDefine   UriPath=new CoAPOptionDefine("Uri-Path", (char)11);
+    public static final CoAPOptionDefine   ContentFormat=new CoAPOptionDefine("Content-Format", (char)12);
+    public static final CoAPOptionDefine   MaxAge=new CoAPOptionDefine("Max-Age", (char)14);
+    public static final CoAPOptionDefine   UriQuery=new CoAPOptionDefine("Uri-Query", (char)15);
+    public static final CoAPOptionDefine   Accept=new CoAPOptionDefine("Accept", (char)17);
+    public static final CoAPOptionDefine   LocationQuery=new CoAPOptionDefine("Location-Query", (char)20);
+    public static final CoAPOptionDefine   Block2=new CoAPOptionDefine("Block2", (char)23);    //RFC 7959
+    public static final CoAPOptionDefine   Block1=new CoAPOptionDefine("Block1", (char)27);    //RFC 7959
+    public static final CoAPOptionDefine   Size2=new CoAPOptionDefine("Size2", (char)28); //RFC 7959
+    public static final CoAPOptionDefine   ProxyUri=new CoAPOptionDefine("Proxy-Uri", (char)35);
+    public static final CoAPOptionDefine   ProxyScheme=new CoAPOptionDefine("Proxy-Scheme", (char)39);
+    public static final CoAPOptionDefine   Size1=new CoAPOptionDefine("Size1", (char)60);
+    public static final CoAPOptionDefine   Unknown=new CoAPOptionDefine("Unknown", (char)0);
 
     private String _name="";
     //选项序号
@@ -107,5 +160,10 @@ public enum CoAPOptionDefine {
     public String toString()
     {
         return String.format("Option Name:%s,OptionNumber:%d,Figure:%s", _name, _optionNumber, String.join(",", _critical ? "Critical" : "", _unsafe ? "UnSafe" : "", _noCacheKey ? "NoCacheKey" : ""));
+    }
+
+    @Override
+    protected String getTag() {
+        return String.valueOf(_optionNumber);
     }
 };

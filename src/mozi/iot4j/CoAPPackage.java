@@ -8,52 +8,93 @@ package mozi.iot4j;
 //内容采用UTF-8编码
 //头部截断使用0xFF填充
 
+import mozi.iot4j.optionvalues.BlockOptionValue;
+import mozi.iot4j.optionvalues.EmptyOptionValue;
 import mozi.iot4j.optionvalues.OptionValue;
+
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
-* 消息类型
-* <list type="table">
-*     <listheader>取值范围</listheader>
-*     <item><term>0</term><see cref="Confirmable"/></item>
-*     <item><term>1</term><see cref="NonConfirmable"/></item>
-*     <item><term>2</term><see cref="Acknowledgement"/></item>
-*     <item><term>3</term><see cref="Reset"/></item>
-* </list>
-*/
-public enum  CoAPMessageType {
-            Confirmable("Confirmable", 0),
-            NonConfirmable ("NonConfirmable", 1),
-            Acknowledgement("Acknowledgement", 2),
-            Reset("Reset", 3)
-         private String _name = "";
-         private byte _typeValue;
+/// <summary>
+/// 仿枚举 抽象类
+/// </summary>
+public abstract class AbsClassEnum
+{
+    protected abstract String getTag();
+    /// <summary>
+    /// 获取方法 不区分标识符大小写
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    public static AbsClassEnum Get(String tag,Class cls)
+    {
+        //T t = Activator.CreateInstance<T>();
+        AbsClassEnum rv;
+        try {
+            Field[] pis = cls.getDeclaredFields();
+            for(Field info:pis)
+            {
+                info.setAccessible(true);
+                //TODO 此处能否得到预期结果
 
+                Object obj=info.get(null);
+                if(null!=obj&&(obj.getClass().isInstance( cls.getClass())){
+                  if(((AbsClassEnum)obj).getTag().equals(tag)){
+                      rv=(AbsClassEnum)obj;
 
-
-         private CoAPMessageType(String name, byte typeValue) {
-            _name = name;
-            _typeValue = typeValue;
-        }
-
-        public byte getValue() {
-            return _typeValue;
-        }
-
-
-//protected override string Tag
-//        {
-//        get
-//        {
-//        return _typeValue.ToString();
-//        }
-//        }
-
-            public String getName() {
-                return _name;
+                }
             }
+            }
+        }catch (Exception ex) {
+            return null;
+        }
+    }
 
+//    /// <summary>
+//    /// 此处判断标识符是否相等,区分大小写
+//    /// <para>
+//    ///     如果要判断子对象是否等于<see cref="null"/>，请使用<see cref="object.Equals(object, object)"/>
+//    /// </para>
+//    /// </summary>
+//    /// <param name="obj"></param>
+//    /// <returns></returns>
+//    public override bool Equals(object obj)
+//{
+//    return obj is AbsClassEnum && ((AbsClassEnum)obj).Tag.Equals(Tag);
+//}
+//    /// <summary>
+//    /// 重载==
+//    /// <para>
+//    ///     如果要判断子对象是否等于<see cref="null"/>，请使用<see cref="object.Equals(object, object)"/>
+//    /// </para>
+//    /// </summary>
+//    /// <param name="a"></param>
+//    /// <param name="b"></param>
+//    /// <returns></returns>
+//    public static bool operator ==(AbsClassEnum a, AbsClassEnum b)
+//    {
+//        return (object)b != null && (object)a != null && a.Tag.Equals(b.Tag);
+//    }
+//
+//    /// <summary>
+//    /// 重载!=
+//    /// <para>
+//    ///     如果要判断子对象是否等于<see cref="null"/>，请使用<see cref="object.Equals(object, object)"/>
+//    /// </para>
+//    /// </summary>
+//    /// <param name="a"></param>
+//    /// <param name="b"></param>
+//    /// <returns></returns>
+//    public static bool operator !=(AbsClassEnum a, AbsClassEnum b)
+//    {
+//        return (object)a == null || (object)b == null || !a.Tag.Equals(b.Tag);
+//    }
+//
+//    public override int GetHashCode()
+//{
+//    return Tag.GetHashCode();
+//}
 }
 
 public class CoAPPackage
@@ -78,17 +119,17 @@ public class CoAPPackage
     {
         CoAPPackage pack = new CoAPPackage();
         byte head = data[0];
-        pack.Version = (byte)(head >> 6);
-        pack.MessageType = AbsClassEnum.Get<CoAPMessageType>(((byte)(head << 2) >> 4).ToString());
-        pack.TokenLength = (byte)((byte)(head << 4) >> 4);
+        pack.setVersion((byte)(head >> 6));
+        pack.setMessageType((CoAPMessageType)AbsClassEnum.Get(String.valueOf((byte)(head << 2) >> 4),CoAPMessageType.class));
+        pack.setTokenLength((byte)((byte)(head << 4) >> 4));
 
-        pack.Code = isRequest ? AbsClassEnum.Get<CoAPRequestMethod>(data[1].ToString()) : (CoAPCode)AbsClassEnum.Get<CoAPResponseCode>(data[1].ToString());
+        pack.setCode(isRequest ? (CoAPCode)AbsClassEnum.Get(String.valueOf(data[1]),CoAPRequestMethod.class) : (CoAPCode)AbsClassEnum.Get(String.valueOf(data[1]),CoAPResponseCode.class));
 
-        byte[] arrMsgId = new byte[2], arrToken = new byte[pack.TokenLength];
+        byte[] arrMsgId = new byte[2], arrToken = new byte[pack.getTokenLength()];
         System.arraycopy(data, 2, arrMsgId, 0, 2);
-        System.arraycopy(data, 2 + 2, arrToken, 0, arrToken.Length);
-        pack.Token = arrToken;
-        pack.MesssageId = BitConverter.ToUInt16(arrMsgId.Revert(), 0);
+        System.arraycopy(data, 2 + 2, arrToken, 0, arrToken.length);
+        pack.setToken( arrToken);
+        pack.setMesssageId(BitConverter.ToUInt16(arrMsgId.Revert(), 0));
         //3+2+arrToken.Length+1开始是Option部分
         int bodySplitterPos = 2 + 2 + arrToken.length;
         uint deltaSum = 0;
@@ -96,18 +137,18 @@ public class CoAPPackage
         {
 
             CoAPOption option = new CoAPOption();
-            option.OptionHead = data[bodySplitterPos];
+            option.setOptionHead( data[bodySplitterPos]);
             //byte len=(byte)(option.OptionHead)
             int lenDeltaExt = 0, lenLengthExt = 0;
-            if (option.Delta <= 12)
+            if (option.getDelta() <= 12)
             {
 
             }
-            else if (option.Delta == 13)
+            else if (option.getDelta() == 13)
             {
                 lenDeltaExt = 1;
             }
-            else if (option.Delta == 14)
+            else if (option.getDelta() == 14)
             {
                 lenDeltaExt = 2;
             }
@@ -115,23 +156,23 @@ public class CoAPPackage
             {
                 byte[] arrDeltaExt = new byte[2];
                 System.arraycopy(data, bodySplitterPos + 1, arrDeltaExt, arrDeltaExt.length - lenDeltaExt, lenDeltaExt);
-                option.DeltaExtend = BitConverter.ToUInt16(arrDeltaExt.Revert(), 0);
+                option.setDeltaExtend(BitConverter.ToUInt16(arrDeltaExt.Revert(), 0));
             }
             //赋默认值
-            option.Option = AbsClassEnum.Get<CoAPOptionDefine>((option.DeltaValue + deltaSum).ToString());
-            if (object.ReferenceEquals(null, option.Option))
+            option.setOption((CoAPOption)AbsClassEnum.Get(String.valueOf(option.getDeltaValue() + deltaSum),CoAPOptionDefine.class));
+            if (object.ReferenceEquals(null, option.getOption()))
             {
                 option.Option = CoAPOptionDefine.Unknown;
             }
-            if (option.Length <= 12)
+            if (option.getLength() <= 12)
             {
 
             }
-            else if (option.Length == 13)
+            else if (option.getLength() == 13)
             {
                 lenLengthExt = 1;
             }
-            else if (option.Length == 14)
+            else if (option.getLength() == 14)
             {
                 lenLengthExt = 2;
             }
@@ -200,7 +241,7 @@ public class CoAPPackage
         }
         else
         {
-            Token = new byte[tokenLength];
+            _token = new byte[tokenLength];
         }
     }
 
@@ -327,7 +368,7 @@ public class CoAPPackage
         {
             optGreater = Options.Count;
         }
-        Options.Insert(optGreater, option);
+        Options.add(optGreater, option);
         return this;
     }
 
@@ -475,59 +516,3 @@ public class CoAPPackage
 //     
 //  6.00-7.31 Reserved
 
-/**
- * 请求码
-*/
-public class CoAPRequestMethod : CoAPCode
-        {
-
-public static CoAPRequestMethod Get = new CoAPRequestMethod("GET", "", 0, 1);
-public static CoAPRequestMethod Post = new CoAPRequestMethod("POST", "", 0, 2);
-public static CoAPRequestMethod Put = new CoAPRequestMethod("PUT", "", 0, 3);
-public static CoAPRequestMethod Delete = new CoAPRequestMethod("DELETE", "", 0, 4);
-
-        internal CoAPRequestMethod(string name, string description, byte category, byte detail) : base(name, description, category, detail)
-        {
-
-        }
-        }
-/**
-* 响应码
-*/
-public class CoAPResponseCode : CoAPCode
-        {
-
-public static CoAPResponseCode Created = new CoAPResponseCode("Created", "Created", 2, 1);
-public static CoAPResponseCode Deleted = new CoAPResponseCode("Deleted", "Deleted", 2, 2);
-public static CoAPResponseCode Valid = new CoAPResponseCode("Valid", "Valid", 2, 3);
-public static CoAPResponseCode Changed = new CoAPResponseCode("Changed", "Changed", 2, 4);
-public static CoAPResponseCode Content = new CoAPResponseCode("Content", "Content", 2, 5);
-
-public static CoAPResponseCode Continue = new CoAPResponseCode("Content", "Content", 2, 31);
-
-public static CoAPResponseCode BadRequest = new CoAPResponseCode("BadRequest", "Bad Request", 4, 0);
-public static CoAPResponseCode Unauthorized = new CoAPResponseCode("Unauthorized", "Unauthorized", 4, 1);
-public static CoAPResponseCode BadOption = new CoAPResponseCode("BadOption", "Bad Option", 4, 2);
-public static CoAPResponseCode Forbidden = new CoAPResponseCode("Forbidden", "Forbidden", 4, 3);
-public static CoAPResponseCode NotFound = new CoAPResponseCode("NotFound", "Not Found", 4, 4);
-public static CoAPResponseCode MethodNotAllowed = new CoAPResponseCode("MethodNotAllowed", "Method Not Allowed", 4, 5);
-public static CoAPResponseCode NotAcceptable = new CoAPResponseCode("NotAcceptable", "Not Acceptable", 4, 6);
-
-public static CoAPResponseCode RequestEntityIncomplete = new CoAPResponseCode(" RequestEntityIncomplete", " Request Entity Incomplete", 4, 8);
-
-public static CoAPResponseCode PreconditionFailed = new CoAPResponseCode("PreconditionFailed", "Precondition Failed", 4, 12);
-public static CoAPResponseCode RequestEntityTooLarge = new CoAPResponseCode("RequestEntityTooLarge", "Request Entity Too Large", 4, 13);
-public static CoAPResponseCode UnsupportedContentFormat = new CoAPResponseCode("UnsupportedContentFormat", "Unsupported Content-Format", 4, 15);
-public static CoAPResponseCode InternalServerError = new CoAPResponseCode("InternalServerError", "Internal Server Error", 5, 0);
-public static CoAPResponseCode NotImplemented = new CoAPResponseCode("NotImplemented", "Not Implemented", 5, 1);
-public static CoAPResponseCode BadGateway = new CoAPResponseCode("BadGateway", "Bad Gateway", 5, 2);
-public static CoAPResponseCode ServiceUnavailable = new CoAPResponseCode("ServiceUnavailable", "Service Unavailable", 5, 3);
-public static CoAPResponseCode GatewayTimeout = new CoAPResponseCode("GatewayTimeout", "Gateway Timeout", 5, 4);
-public static CoAPResponseCode ProxyingNotSupported = new CoAPResponseCode("ProxyingNotSupported", "Proxying Not Supported", 5, 5);
-
-        internal CoAPResponseCode(string name, string description, byte category, byte detail) : base(name, description, category, detail)
-        {
-
-        }
-
-        }

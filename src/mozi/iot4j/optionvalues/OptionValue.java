@@ -1,5 +1,7 @@
 package mozi.iot4j.optionvalues;
 
+import mozi.iot4j.Uint32;
+
 /**
 * 选项值>=0 bytes
 * 空 字节数组 数字 ASCII/UTF-8字符串
@@ -97,7 +99,7 @@ public class BlockOptionValue extends OptionValue
     /**
      * 块内位置 占位4-20bits 4 12 20
      */
-    private  uint _num;
+    private Uint32 _num;
     /**
      * 是否最后一个包 占位1bit 倒数第4位
      */
@@ -107,11 +109,11 @@ public class BlockOptionValue extends OptionValue
      */
     private char _size;
 
-    public uint getNum(){
+    public Uint32 getNum(){
         return _num;
     }
 
-    public void setNum(uint num){
+    public void setNum(Uint32 num){
         _num=num;
     }
 
@@ -151,7 +153,7 @@ public class BlockOptionValue extends OptionValue
     @Override
     public byte[] getPack() {
         byte[] data;
-        uint num = (_num << 4) | (byte)((byte)Math.log(_size, 2) - 4);
+        Uint32 num = (_num << 4) | (byte)((byte)Math.log(_size, 2) - 4);
         if (_moreFlag)
         {
             num |= 8;

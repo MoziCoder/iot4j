@@ -11,7 +11,7 @@ package mozi.iot4j;
 import mozi.iot4j.optionvalues.BlockOptionValue;
 import mozi.iot4j.optionvalues.EmptyOptionValue;
 import mozi.iot4j.optionvalues.OptionValue;
-
+import mozi.iot4j.CoAPOption;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -132,7 +132,7 @@ public class CoAPPackage
         pack.setMesssageId(BitConverter.ToUInt16(arrMsgId.Revert(), 0));
         //3+2+arrToken.Length+1开始是Option部分
         int bodySplitterPos = 2 + 2 + arrToken.length;
-        uint deltaSum = 0;
+        Uint32 deltaSum = 0;
         while (bodySplitterPos < data.length && data[bodySplitterPos] != CoAPProtocol.HeaderEnd)
         {
 
@@ -160,9 +160,10 @@ public class CoAPPackage
             }
             //赋默认值
             option.setOption((CoAPOption)AbsClassEnum.Get(String.valueOf(option.getDeltaValue() + deltaSum),CoAPOptionDefine.class));
-            if (object.ReferenceEquals(null, option.getOption()))
+            //TODO 此处需要验证Java语言下的执行效果
+            if (Object.ReferenceEquals(null, option.getOption()))
             {
-                option.Option = CoAPOptionDefine.Unknown;
+                option.setOption(CoAPOptionDefine.Unknown);
             }
             if (option.getLength() <= 12)
             {
@@ -179,24 +180,24 @@ public class CoAPPackage
             if (lenLengthExt > 0)
             {
                 byte[] arrLengthExt = new byte[2];
-                System.arraycopy(data, bodySplitterPos + 1 + lenDeltaExt, arrLengthExt, arrLengthExt.Length - lenLengthExt, lenLengthExt);
-                option.LengthExtend = BitConverter.ToUInt16(arrLengthExt.Revert(), 0);
+                System.arraycopy(data, bodySplitterPos + 1 + lenDeltaExt, arrLengthExt, arrLengthExt.length - lenLengthExt, lenLengthExt);
+                option.setLengthExtend(BitConverter.ToUInt16(arrLengthExt.Revert(), 0));
             }
 
-            option.Value = new byte[option.LengthValue];
-            System.arraycopy(data, bodySplitterPos + 1 + lenDeltaExt + lenLengthExt, option.Value.Pack, 0, option.Value.Length);
-            pack.Options.Add(option);
-            deltaSum += option.Delta;
+            option.setValue(new byte[option.getLengthValue()]);
+            System.arraycopy(data, bodySplitterPos + 1 + lenDeltaExt + lenLengthExt, option.getValue().getPack(), 0, option.getValue().getLength());
+            pack.Options.add(option);
+            deltaSum += option.getDelta();
             //头长度+delta扩展长度+len
-            bodySplitterPos += 1 + lenDeltaExt + lenLengthExt + option.Value.length;
+            bodySplitterPos += 1 + lenDeltaExt + lenLengthExt + option.getValue().getLength();
 
         }
         //有效荷载
-        if (data.Length > bodySplitterPos && data[bodySplitterPos] == CoAPProtocol.HeaderEnd)
+        if (data.length > bodySplitterPos && data[bodySplitterPos] == CoAPProtocol.HeaderEnd)
         {
-            pack.Payload = new byte[data.Length - bodySplitterPos - 1];
+            pack.setPayload(new byte[data.length - bodySplitterPos - 1]);
 
-            System.arraycopy(data, bodySplitterPos + 1, pack.Payload, 0, pack.Payload.Length);
+            System.arraycopy(data, bodySplitterPos + 1, pack.getPayload(), 0, pack.getPayload().length);
         }
         return pack;
 
@@ -324,13 +325,13 @@ public class CoAPPackage
         data.add((byte)(((byte)_code.getCategory() << 5) | ((byte)(_code.getDetail() << 3) >> 3)));
         data.addAll(BitConverter.GetBytes(_msgId).Revert());
         data.addAll(_token);
-        Uint delta = 0;
+        Uint32 delta = 0;
 
-        foreach (CoaAPOption op:Options)
+        for (CoaAPOption op:Options)
         {
-            op.DeltaValue = op.Option.OptionNumber - delta;
-            data.addAll(op.Pack);
-            delta += op.DeltaValue;
+            op.setDeltaValue(op.getOption().getOptionNumber() - delta);
+            data.addAll(op.getPack());
+            delta += op.getDeltaValue();
         }
         if (_payload != null)
         {

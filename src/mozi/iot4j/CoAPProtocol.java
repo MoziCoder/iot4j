@@ -33,7 +33,7 @@ public class CoAPProtocol
 */
 public class CoAPOption
 {
-    private uint _lenValue = 0;
+    private Uint32 _lenValue = 0;
 
     private char _lengthExtend,_deltaExtend;
 
@@ -43,7 +43,7 @@ public class CoAPOption
     /**
      * Delta总值<see cref="Delta"/>+<see cref="DeltaExtend"/>
      */
-    private uint _deltaValue;
+    private Uint32 _deltaValue;
 
     /**
      * 首部字节码
@@ -70,11 +70,11 @@ public class CoAPOption
     }
 
 
-    public uint getDeltaValue(){
-        return (uint)(_delta + _deltaExtend);
+    public Uint32 getDeltaValue(){
+        return (Uint32)(_delta + _deltaExtend);
     }
 
-    public void setDeltaValue(uint deltaValue){
+    public void setDeltaValue(Uint32 deltaValue){
         _deltaValue = deltaValue;
         if (_deltaValue <= 12)
         {
@@ -95,10 +95,10 @@ public class CoAPOption
     /**
     * 长度总值<see cref="Length"/>+<see cref="LengthExtend"/>
     */
-    public uint getLengthValue(){
-        return (uint)(_length+_lengthExtend);
+    public Uint32 getLengthValue(){
+        return (Uint32)(_length+_lengthExtend);
     }
-    public void setLengthValue(uint _lengthValue){
+    public void setLengthValue(Uint32 _lengthValue){
         _lenValue = _lengthValue;
         if (_lenValue <= 12)
         {
@@ -199,7 +199,7 @@ public class CoAPOption
         {
             data.add((byte)_lengthExtend);
         }
-        data.addAll(_optValue.Pack);
+        data.addAll(_optValue.getPack());
         return data.toArray();
     }
 

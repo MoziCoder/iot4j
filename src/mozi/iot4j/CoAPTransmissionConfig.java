@@ -1,6 +1,8 @@
 package mozi.iot4j;
 /**
  * CoAP传输时间参数
+ * @author Jason
+ * @date 2021/12/29
  */
 public class CoAPTransmissionConfig {
     /**

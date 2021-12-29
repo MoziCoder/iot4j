@@ -2,6 +2,8 @@ package mozi.iot4j;
 
 /**
  * CoAP操作代码
+ * @author Jason
+ * @date 2021/12/29
 */
 public class CoAPCode extends AbsClassEnum
  {

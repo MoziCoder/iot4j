@@ -2,6 +2,8 @@ package mozi.iot4j.optionvalues;
 
 /**
  * 字节数组选项值
+ * @author Jason
+ * @date 2021/12/29
  */
 public class ArrayByteOptionValue extends OptionValue
 {

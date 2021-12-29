@@ -5,6 +5,8 @@ import mozi.iot4j.Uint32;
 /**
 * 选项值>=0 bytes
 * 空 字节数组 数字 ASCII/UTF-8字符串
+ * @author Jason
+ * @date 2021/12/29
 */
 public abstract class OptionValue
 {
@@ -27,6 +29,8 @@ public abstract class OptionValue
 
 /**
  * uint选项值，.Net的数值类型与网络包数据包排序不同，故字节数组会进行数组翻转
+ * @author Jason
+ * @date 2021/12/29
  */
 public class UnsignedIntegerOptionValue extends OptionValue
 {
@@ -93,6 +97,8 @@ public class UnsignedIntegerOptionValue extends OptionValue
 
 /**
  * 分块选项 数据结构 适用Block1 Block2 长度为可变长度，可为8bits 16bits 24bits
+ * @author Jason
+ * @date 2021/12/29
  */
 public class BlockOptionValue extends OptionValue
 {

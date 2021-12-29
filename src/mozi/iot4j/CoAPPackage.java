@@ -1,14 +1,5 @@
 package mozi.iot4j;
 
-//Main Reference:RFC7252
-//Patial Reference:
-//RFC7959 分块传输
-//RFC8613 对象安全
-//RFC8974 扩展凭据和无状态客户端 
-
-//内容采用UTF-8编码
-//头部截断使用0xFF填充
-
 import mozi.iot4j.optionvalues.BlockOptionValue;
 import mozi.iot4j.optionvalues.EmptyOptionValue;
 import mozi.iot4j.optionvalues.OptionValue;
@@ -16,9 +7,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-/// <summary>
-/// 仿枚举 抽象类
-/// </summary>
+/**
+ * 仿枚举 抽象类
+ * @author Jason
+ * @date 2021/12/29
+*/
 public abstract class AbsClassEnum
 {
     protected abstract String getTag();
@@ -97,6 +90,19 @@ public abstract class AbsClassEnum
 //}
 }
 
+/**
+ * @author Jason
+ * @date 2021/12/29
+ *
+ *      Main Reference:RFC7252
+ *      Patial Reference:
+ *      RFC7959 分块传输
+ *      RFC8613 对象安全
+ *      RFC8974 扩展凭据和无状态客户端
+ *
+ *      内容采用UTF-8编码
+ *      头部截断使用0xFF填充
+ */
 public class CoAPPackage
 {
     /**

@@ -2,6 +2,8 @@ package mozi.iot4j.optionvalues;
 
 /**
  * string选项值
+ * @author Jason
+ * @date 2021/12/29
  */
 public class StringOptionValue extends OptionValue
 {

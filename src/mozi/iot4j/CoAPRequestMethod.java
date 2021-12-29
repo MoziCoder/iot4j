@@ -58,6 +58,10 @@ package mozi.iot4j;
 //
 //  6.00-7.31 Reserved
 
+/**
+ * @author Jason
+ * @date 2021/12/29
+ */
 public class CoAPRequestMethod extends CoAPCode
         {
 

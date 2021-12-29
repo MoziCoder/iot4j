@@ -1,5 +1,10 @@
 package mozi.iot4j;
 
+/**
+ * Uint32数据类型
+ * @author Jason
+ * @date 2021/12/29
+ */
 public class Uint32 implements Comparable {
 
     public final static int SIZE = 32;

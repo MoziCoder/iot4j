@@ -1,6 +1,6 @@
 package mozi.iot4j;
 
-public class Uint32 {
+public class Uint32 implements Comparable {
 
     public final static int SIZE = 32;
 
@@ -53,7 +53,15 @@ public class Uint32 {
         }
         return this.value > obj.value ? 1 : 0;
     }
-
+    public int compareTo(int obj) {
+        if (this.value<obj) {
+            return -1;
+        }else if (this.value>obj){
+            return 1;
+        }else{
+            return 0;
+        }
+    }
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -66,5 +74,40 @@ public class Uint32 {
         if (value != other.value)
             return false;
         return true;
+    }
+
+    public Uint32 plus(Uint32 that){
+        setValue(this.value+that.getValue());
+        return this;
+    }
+
+    public Uint32 plus(byte that){
+        setValue(this.value+that);
+        return this;
+    }
+    public Uint32 minus(Uint32 that){
+        setValue(this.value-that.getValue());
+        return this;
+    }
+    public Uint32 minus(byte that){
+        setValue(this.value-that);
+        return this;
+    }
+    public Uint32 times(Uint32 that){
+        setValue(this.value*that.getValue());
+        return this;
+    }
+    public Uint32 div(Uint32 that){
+        setValue(this.value/that.getValue());
+        return this;
+    }
+    public Uint32 rem(Uint32 that){
+        setValue(this.value%that.getValue());
+        return this;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return 0;
     }
 }

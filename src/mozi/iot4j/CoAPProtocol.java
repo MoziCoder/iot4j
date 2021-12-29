@@ -33,7 +33,7 @@ public class CoAPProtocol
 */
 public class CoAPOption
 {
-    private Uint32 _lenValue = 0;
+    private Uint32 _lenValue = new Uint32(0);
 
     private char _lengthExtend,_deltaExtend;
 
@@ -172,7 +172,7 @@ public class CoAPOption
     }
     public void setValue(OptionValue optValue){
         _optValue = optValue;
-        _lenValue = optValue != null ? (uint)optValue.getLength() : 0;
+        _lenValue = optValue != null ? (Uint32) optValue.getLength() : 0;
     }
     private byte[] Pack;
 
@@ -199,7 +199,7 @@ public class CoAPOption
         {
             data.add((byte)_lengthExtend);
         }
-        data.addAll(_optValue.getPack());
+        data.addAll((byte[])_optValue.getPack());
         return data.toArray();
     }
 

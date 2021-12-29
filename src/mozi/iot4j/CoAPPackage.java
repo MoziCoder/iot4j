@@ -132,7 +132,7 @@ public class CoAPPackage
         pack.setMesssageId(BitConverter.ToUInt16(arrMsgId.Revert(), 0));
         //3+2+arrToken.Length+1开始是Option部分
         int bodySplitterPos = 2 + 2 + arrToken.length;
-        Uint32 deltaSum = 0;
+        Uint32 deltaSum = new Uint32(0);
         while (bodySplitterPos < data.length && data[bodySplitterPos] != CoAPProtocol.HeaderEnd)
         {
 

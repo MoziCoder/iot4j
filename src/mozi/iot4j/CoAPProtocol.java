@@ -2,7 +2,6 @@ package mozi.iot4j;
 
 import mozi.iot4j.optionvalues.ArrayByteOptionValue;
 import mozi.iot4j.optionvalues.OptionValue;
-
 import java.util.ArrayList;
 
 /*
@@ -41,6 +40,7 @@ public class CoAPOption
 
     private OptionValue _optValue;
     /**
+     *
      * Delta总值<see cref="Delta"/>+<see cref="DeltaExtend"/>
      */
     private Uint32 _deltaValue;

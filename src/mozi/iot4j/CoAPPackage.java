@@ -1,4 +1,5 @@
 package mozi.iot4j;
+
 //Main Reference:RFC7252
 //Patial Reference:
 //RFC7959 分块传输
@@ -11,7 +12,6 @@ package mozi.iot4j;
 import mozi.iot4j.optionvalues.BlockOptionValue;
 import mozi.iot4j.optionvalues.EmptyOptionValue;
 import mozi.iot4j.optionvalues.OptionValue;
-import mozi.iot4j.CoAPOption;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +39,12 @@ public abstract class AbsClassEnum
                 //TODO 此处能否得到预期结果
 
                 Object obj=info.get(null);
-                if(null!=obj&&(obj.getClass().isInstance( cls.getClass())){
-                  if(((AbsClassEnum)obj).getTag().equals(tag)){
-                      rv=(AbsClassEnum)obj;
+                if(null!=obj&&(obj.getClass().isInstance( cls.getClass()))){
+                      if(((AbsClassEnum)obj).getTag().equals(tag)){
+                          rv=(AbsClassEnum)obj;
 
+                      }
                 }
-            }
             }
         }catch (Exception ex) {
             return null;

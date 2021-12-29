@@ -3,7 +3,6 @@ package mozi.iot4j;
 import mozi.iot4j.optionvalues.BlockOptionValue;
 import mozi.iot4j.optionvalues.EmptyOptionValue;
 import mozi.iot4j.optionvalues.OptionValue;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
@@ -420,7 +419,7 @@ public class CoAPPackage
     * @param define
     * @param optionValue
     */
-    public CoAPPackage SetOption(CoAPOptionDefine define, string optionValue)
+    public CoAPPackage SetOption(CoAPOptionDefine define, String optionValue)
     {
         StringOptionValue v = new StringOptionValue() { Value = optionValue };
         return SetOption(define, v);

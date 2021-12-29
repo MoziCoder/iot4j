@@ -44,7 +44,7 @@ public class CoAPOption {
 
     private OptionValue _optValue;
     /**
-     * Delta总值${_delta}+${_deltaExtend}
+     * Delta总值{@_delta}+{@_deltaExtend}
      */
     private Uint32 _deltaValue;
 

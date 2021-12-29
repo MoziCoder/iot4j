@@ -39,6 +39,6 @@ package mozi.iot4j;
 //TODO 分块传输 RFC 7959
 //TODO 对象安全
 
-public class CoAPClient {
+public class CoAPClient extends CoAPPeer{
 
 }

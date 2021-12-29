@@ -3,9 +3,15 @@ package mozi.iot4j;
 import mozi.iot4j.optionvalues.BlockOptionValue;
 import mozi.iot4j.optionvalues.EmptyOptionValue;
 import mozi.iot4j.optionvalues.OptionValue;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+
+@Target(ElementType.PARAMETER)
+@interface BlockDefineCategory{};
 
 /**
  * 仿枚举 抽象类

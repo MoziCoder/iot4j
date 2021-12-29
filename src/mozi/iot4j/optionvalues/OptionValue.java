@@ -139,7 +139,7 @@ public class BlockOptionValue extends OptionValue
         _size=size;
     }
 
-    public  String ToString()
+    public  String toString()
     {
         return getPack() == null ? "null" : String.format("%s,Num:%d,M:%d,SZX:%d(bytes)", "Block", _num, (_moreFlag ? 1 : 0), _size);
     }

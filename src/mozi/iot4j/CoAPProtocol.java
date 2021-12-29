@@ -2,7 +2,6 @@ package mozi.iot4j;
 
 import mozi.iot4j.optionvalues.ArrayByteOptionValue;
 import mozi.iot4j.optionvalues.OptionValue;
-
 import java.util.ArrayList;
 
 /*
@@ -36,6 +35,7 @@ public class CoAPProtocol {
  * @date 2021/12/29
  */
 public class CoAPOption {
+
     private Uint32 _lenValue = new Uint32(0);
 
     private char _lengthExtend, _deltaExtend;
@@ -118,9 +118,11 @@ public class CoAPOption {
      * 偏移值 4bits
      * 取值范围：0-15
      * 保留特殊：
-     *    13:  An 8-bit unsigned integer follows the initial byte and indicates the Option Delta minus 13.
-     *    14:  A 16-bit unsigned integer in network byte order follows the initial byte and indicates the Option Delta minus 269.
-     *    15:  Reserved for the Payload Marker.If the field is set to thisvalue but the entire byte is not the payload marker, this MUST be processed as a message format error.
+     *    <list>
+     *      <li>13:  An 8-bit unsigned integer follows the initial byte and indicates the Option Delta minus 13.</li>
+     *      <li>14:  A 16-bit unsigned integer in network byte order follows the initial byte and indicates the Option Delta minus 269.</li>
+     *      <li>15:  Reserved for the Payload Marker.If the field is set to thisvalue but the entire byte is not the payload marker, this MUST be processed as a message format error.</li>
+     *    </list>
      */
     public byte getDelta() {
         return _delta;

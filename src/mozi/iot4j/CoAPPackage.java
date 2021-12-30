@@ -1,8 +1,8 @@
 package mozi.iot4j;
 
-import mozi.iot4j.optionvalues.BlockOptionValue;
-import mozi.iot4j.optionvalues.EmptyOptionValue;
-import mozi.iot4j.optionvalues.OptionValue;
+import mozi.iot4j.optionvalues.*;
+
+import java.io.ByteArrayOutputStream;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
@@ -25,7 +25,7 @@ public abstract class AbsClassEnum
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    public static AbsClassEnum Get(String tag,Class cls)
+    public static AbsClassEnum get(String tag, Class cls)
     {
         //T t = Activator.CreateInstance<T>();
         AbsClassEnum rv;
@@ -131,17 +131,17 @@ public class CoAPPackage
         CoAPPackage pack = new CoAPPackage();
         byte head = data[0];
         pack.setVersion((byte)(head >> 6));
-        pack.setMessageType((CoAPMessageType)AbsClassEnum.Get(String.valueOf((byte)(head << 2) >> 4),CoAPMessageType.class));
+        pack.setMessageType((CoAPMessageType)AbsClassEnum.get(String.valueOf((byte)(head << 2) >> 4),CoAPMessageType.class));
         pack.setTokenLength((byte)((byte)(head << 4) >> 4));
 
-        pack.setCode(isRequest ? (CoAPCode)AbsClassEnum.Get(String.valueOf(data[1]),CoAPRequestMethod.class) : (CoAPCode)AbsClassEnum.Get(String.valueOf(data[1]),CoAPResponseCode.class));
+        pack.setCode(isRequest ? (CoAPCode)AbsClassEnum.get(String.valueOf(data[1]),CoAPRequestMethod.class) : (CoAPCode)AbsClassEnum.get(String.valueOf(data[1]),CoAPResponseCode.class));
 
         byte[] arrMsgId = new byte[2], arrToken = new byte[pack.getTokenLength()];
         System.arraycopy(data, 2, arrMsgId, 0, 2);
         System.arraycopy(data, 2 + 2, arrToken, 0, arrToken.length);
         pack.setToken( arrToken);
 
-        pack.setMesssageId(BitConverter.ToUInt16(arrMsgId.Revert(), 0));
+        pack.setMesssageId(ByteStreamUtil.charFromBytes(arrMsgId));
         //3+2+arrToken.Length+1开始是Option部分
         int bodySplitterPos = 2 + 2 + arrToken.length;
         Uint32 deltaSum = new Uint32(0);
@@ -168,10 +168,10 @@ public class CoAPPackage
             {
                 byte[] arrDeltaExt = new byte[2];
                 System.arraycopy(data, bodySplitterPos + 1, arrDeltaExt, arrDeltaExt.length - lenDeltaExt, lenDeltaExt);
-                option.setDeltaExtend(BitConverter.ToUInt16(arrDeltaExt.Revert(), 0));
+                option.setDeltaExtend(ByteStreamUtil.charFromBytes(arrDeltaExt));
             }
             //赋默认值
-            option.setOption((CoAPOption)AbsClassEnum.Get(option.getDeltaValue().plus(deltaSum).toString(),CoAPOptionDefine.class));
+            option.setOption((CoAPOption)AbsClassEnum.get(option.getDeltaValue().plus(deltaSum).toString(),CoAPOptionDefine.class));
             //TODO 此处需要验证Java语言下的执行效果
             if (Object.ReferenceEquals(null, option.getOption()))
             {
@@ -193,13 +193,13 @@ public class CoAPPackage
             {
                 byte[] arrLengthExt = new byte[2];
                 System.arraycopy(data, bodySplitterPos + 1 + lenDeltaExt, arrLengthExt, arrLengthExt.length - lenLengthExt, lenLengthExt);
-                option.setLengthExtend(BitConverter.ToUInt16(arrLengthExt.Revert(), 0));
+                option.setLengthExtend(ByteStreamUtil.charFromBytes(arrLengthExt));
             }
 
             option.getValue().setValue(new byte[(int) option.getLengthValue().getValue()]);
             System.arraycopy(data, bodySplitterPos + 1 + lenDeltaExt + lenLengthExt, option.getValue().getPack(), 0, option.getValue().getLength());
             pack.Options.add(option);
-            deltaSum += option.getDelta();
+            deltaSum=new Uint32(option.getDelta());
             //头长度+delta扩展长度+len
             bodySplitterPos += 1 + lenDeltaExt + lenLengthExt + option.getValue().getLength();
 
@@ -325,32 +325,34 @@ public class CoAPPackage
     /**
     * 打包|转为字节流
     */
-    public Byte[] Pack()
+    public byte[] Pack()
     {
-        List<Byte> data = new ArrayList<Byte>();
-        byte head = 0b00000000;
-        head = (byte)(head | (_version << 6));
-        head = (byte)(head | (_msgType.getValue() << 4));
-        head = (byte)(head | _tokenLength);
+        ByteArrayOutputStream bos=new ByteArrayOutputStream();
+        try {
+            byte head = 0b00000000;
+            head = (byte) (head | (_version << 6));
+            head = (byte) (head | (_msgType.getValue() << 4));
+            head = (byte) (head | _tokenLength);
 
-        data.add(head);
-        data.add((byte)(((byte)_code.getCategory() << 5) | ((byte)(_code.getDetail() << 3) >> 3)));
-        data.addAll(BitConverter.GetBytes(_msgId).Revert());
-        data.addAll(_token);
-        Uint32 delta = new Uint32(0);
+            bos.write(head);
+            bos.write((byte) (((byte) _code.getCategory() << 5) | ((byte) (_code.getDetail() << 3) >> 3)));
+            bos.write(ByteStreamUtil.charToBytes(_msgId));
+            bos.write(_token);
+            Uint32 delta = new Uint32(0);
 
-        for (CoaAPOption op:Options)
-        {
-            op.setDeltaValue(op.getOption().getOptionNumber() - delta);
-            data.addAll(op.getPack());
-            delta += op.getDeltaValue();
+            for (CoAPOption op : Options) {
+                op.setDeltaValue(new Uint32(op.getOption().getOptionNumber() - delta.getValue()));
+                bos.write(op.getPack());
+                delta.minus(op.getDeltaValue());
+            }
+            if (_payload != null) {
+                bos.write(CoAPProtocol.HeaderEnd);
+                bos.write(_payload);
+            }
+            return bos.toByteArray();
+        }catch (Exception ex){
+            return null;
         }
-        if (_payload != null)
-        {
-            data.add(CoAPProtocol.HeaderEnd);
-            data.addAll(_payload);
-        }
-        return (Byte[])data.toArray();
     }
 
     /**
@@ -371,15 +373,13 @@ public class CoAPPackage
     */
     public CoAPPackage SetOption(CoAPOptionDefine define, OptionValue optionValue)
     {
-        CoAPOption option = new CoAPOption()
-        {
-            Option = define,
-            Value = optionValue
-        };
+        CoAPOption option = new CoAPOption();
+        option.setOption(define);
+        option.setValue(optionValue);
         var optGreater = Options.FindIndex(x => x.DeltaValue > option.DeltaValue);
         if (optGreater < 0)
         {
-            optGreater = Options.Count;
+            optGreater = Options.size();
         }
         Options.add(optGreater, option);
         return this;
@@ -393,11 +393,11 @@ public class CoAPPackage
     */
     public CoAPPackage SetOption(CoAPOptionDefine define, byte[] optionValue)
     {
-        CoAPOption option = new CoAPOption()
-        {
-            Option = define,
-            Value = new ArrayByteOptionValue() { Value = optionValue }
-        };
+        CoAPOption option = new CoAPOption();
+        option.setOption(define);
+        var ao=new ArrayByteOptionValue() { };
+        ao.setValue(optionValue);
+        option.setValue(ao);
         Options.add(option);
         return this;
     }
@@ -408,9 +408,10 @@ public class CoAPPackage
     * @param define
     * @param optionValue
     */
-    public CoAPPackage SetOption(CoAPOptionDefine define, uint optionValue)
+    public CoAPPackage SetOption(CoAPOptionDefine define, Uint32 optionValue)
     {
-        UnsignedIntegerOptionValue v = new UnsignedIntegerOptionValue() { Value = optionValue };
+        UnsignedIntegerOptionValue v = new UnsignedIntegerOptionValue() { };
+        v.setValue((int)optionValue.getValue());
         return SetOption(define, v);
     }
 
@@ -422,7 +423,8 @@ public class CoAPPackage
     */
     public CoAPPackage SetOption(CoAPOptionDefine define, String optionValue)
     {
-        StringOptionValue v = new StringOptionValue() { Value = optionValue };
+        StringOptionValue v = new StringOptionValue() { };
+        v.setValue(optionValue);
         return SetOption(define, v);
     }
 
@@ -436,15 +438,19 @@ public class CoAPPackage
     {
         if (define == CoAPOptionDefine.Block1 || define == CoAPOptionDefine.Block2)
         {
-            var opt = Options.Find(x => x.Option == define);
-            StringOptionValue v = new StringOptionValue() { Value = optionValue };
+            CoAPOption opt = Options.Find(x => x.Option == define);
+            StringOptionValue v = new StringOptionValue() {};
+            v.setValue(optionValue);
+            //TODO 此处判断有问题
             if (opt == null)
             {
-                opt = new CoAPOption() { Option = define, Value = v };
+                opt = new CoAPOption() { };
+                opt.setOption(define);
+                opt.setValue(v);
             }
             else
             {
-                opt.Value = v;
+                opt.setValue(v);
             }
 
             return SetOption(define, v);
@@ -481,7 +487,7 @@ public class CoAPPackage
     */
     public CoAPPackage SetContentType(ContentFormat ft)
     {
-        return SetOption(CoAPOptionDefine.ContentFormat, ft.Num);
+        return SetOption(CoAPOptionDefine.ContentFormat, new Uint32(ft.getNum()));
     }
 }
 

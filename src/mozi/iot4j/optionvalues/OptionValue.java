@@ -28,74 +28,6 @@ public abstract class OptionValue
 }
 
 /**
- * uint选项值，.Net的数值类型与网络包数据包排序不同，故字节数组会进行数组翻转
- * @author Jason
- * @date 2021/12/29
- */
-public class UnsignedIntegerOptionValue extends OptionValue
-{
-    @Override
-    public Object getValue() {
-
-        byte[] data = new byte[4];
-        if (_pack != null)
-        {
-
-            System.arraycopy(_pack, 0, data, data.length - _pack.length, _pack.length);
-            return BitConverter.ToUInt32(data.revert(), 0);
-
-        }
-        else
-        {
-            return 0;
-        }
-
-    }
-
-    @Override
-    public void setValue(Object value) {
-
-        Uint32 num = new Uint32((Integer)value);
-        byte[] data = BitConverter.GetBytes(num);
-
-        if (num < 256) //2~8
-        {
-            _pack = new byte[1] { data[3] };
-        }
-        else if (num < 65536) //2~16
-        {
-            _pack = new byte[2] { data[2], data[3] }.Revert();
-        }
-        else if (num < 16777216) //2~24
-        {
-            _pack = new byte[3] { data[1], data[2], data[3] }.Revert();
-        }
-        else {
-            _pack = data;
-        }
-
-    }
-
-    /**
-     * 高位在前，低位在后，且去掉所有高位0x00字节
-     */
-    @Override
-    public byte[] getPack() {
-        return _pack;
-    }
-
-    @Override
-    public void setPack(byte[] pack) {
-        _pack=pack;
-    }
-
-    @Override
-    public int getLength() {
-        return _pack != null ? _pack.length : 0;
-    }
-}
-
-/**
  * 分块选项 数据结构 适用Block1 Block2 长度为可变长度，可为8bits 16bits 24bits
  * @author Jason
  * @date 2021/12/29
@@ -159,24 +91,24 @@ public class BlockOptionValue extends OptionValue
     @Override
     public byte[] getPack() {
         byte[] data;
-        Uint32 num = (_num << 4) | (byte)((byte)Math.log(_size, 2) - 4);
+        Uint32 num = (_num.getValue() << 4) | (byte)((byte)Math.log(_size, 2) - 4);
         if (_moreFlag)
         {
-            num |= 8;
+            num.setValue(num.getValue() | 8);
         }
-        if (_num < 16)
+        if (_num.lt( 16))
         {
             data = new byte[1];
-            data[0] = (byte)_num;
+            data[0] = (byte)_num.getValue();
         }
-        else if (_num < 4096)
+        else if (_num.lt( 4096))
         {
-            data = BitConverter.GetBytes((char)num).Revert();
+            data = ByteStreamUtil.charToBytes((char)num.getValue());
         }
         else
         {
             data = new byte[3];
-            System.arraycopy(BitConverter.GetBytes(num).Revert(), 1, data, 0, data.length);
+            System.arraycopy(ByteStreamUtil.uint32ToBytes(num), 1, data, 0, data.length);
         }
         return data;
     }
@@ -187,8 +119,8 @@ public class BlockOptionValue extends OptionValue
         _size = (char)Math.pow(2, (((byte)(pack[pack.length-1] << 5)) >> 5) + 4);
         _moreFlag = (pack[pack.length-1] & 8) == 8;
         byte[] data = new byte[4];
-        System.arraycopy(pack.Revert(), 0, data, data.length - pack.length, pack.length);
-        _num = BitConverter.ToUInt32(data, 0);
+        System.arraycopy(pack, 0, data, data.length - pack.length, pack.length);
+        _num = ByteStreamUtil.uint32FromBytes(data);
 
     }
 

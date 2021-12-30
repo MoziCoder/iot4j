@@ -113,4 +113,8 @@ public class CoAPOptionDefine extends AbsClassEnum {
     protected String getTag() {
         return String.valueOf(_optionNumber);
     }
+
+    public char getOptionNumber(){
+        return _optionNumber;
+    }
 };

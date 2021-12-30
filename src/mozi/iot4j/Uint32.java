@@ -111,6 +111,10 @@ public class Uint32 implements Comparable {
         setValue(this.value-that);
         return this;
     }
+    public Uint32 minus(int that){
+        setValue(this.value-that);
+        return this;
+    }
     public Uint32 times(Uint32 that){
         setValue(this.value*that.getValue());
         return this;
@@ -123,20 +127,10 @@ public class Uint32 implements Comparable {
         setValue(this.value%that.getValue());
         return this;
     }
-    /**
-     * 转字节流
-     * @return
-     */
-    public byte[] toBytes(){
-        byte[] targets = new byte[4];
-        targets[0] = (byte) (value & 0xff);// 最低位
-        targets[1] = (byte) ((value >> 8) & 0xff);// 次低位
-        targets[2] = (byte) ((value >> 16) & 0xff);// 次高位
-        targets[3] = (byte) (value >>> 24);// 最高位,无符号右移。
-        return targets;
-    }
+
     @Override
     public int compareTo(Object o) {
         return 0;
     }
+
 }

@@ -22,8 +22,9 @@ public class UDPSocket {
         _port=port;
     }
 
-    public void start(){
+    public void start(int port){
 
+        _port=port;
         try {
             _sc= new DatagramSocket(_port);
             _sc.setReuseAddress(true);
@@ -47,5 +48,9 @@ public class UDPSocket {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void shutdown() {
+
     }
 }

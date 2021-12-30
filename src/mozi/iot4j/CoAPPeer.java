@@ -1,5 +1,6 @@
 package mozi.iot4j;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -11,11 +12,13 @@ import java.util.TimeZone;
  */
 public class CoAPPeer {
 
+
+
     protected  UDPSocket _socket;
 
     protected int BindPort = CoAPProtocol.Port;
 
-    protected List<CoAPCode> SupportedRequest = new List<CoAPCode> { CoAPRequestMethod.Get, CoAPRequestMethod.Post, CoAPRequestMethod.Put, CoAPRequestMethod.Delete };
+    protected ArrayList<CoAPCode> SupportedRequest = new ArrayList<CoAPCode>() ;
 
     /// <summary>
     /// 服务端口
@@ -28,23 +31,27 @@ public class CoAPPeer {
 
     public CoAPPeer()
     {
+        SupportedRequest.add(CoAPRequestMethod.Get);
+        SupportedRequest.add(CoAPRequestMethod.Post);
+        SupportedRequest.add(CoAPRequestMethod.Put);
+        SupportedRequest.add(CoAPRequestMethod.Delete );
         _socket = new UDPSocket();
     }
     /// <summary>
     /// 以指定端口启动<see cref="F:Port"/>，如果不配置端口则使用默认端口
     /// </summary>
-    public void Start()
+    public void start()
     {
-        Start(BindPort);
+        start(BindPort);
     }
     /// <summary>
     /// 启动本端服务
     /// </summary>
     /// <param name="port"></param>
-    public void Start(int port)
+    public void start(int port)
     {
         BindPort = port;
-        _socket.Start(BindPort);
+        _socket.start(BindPort);
         StartTime = Calendar.getInstance(TimeZone.getDefault()).getTime();
     }
     /// <summary>
@@ -52,7 +59,7 @@ public class CoAPPeer {
     /// </summary>
     public void Shutdown()
     {
-        _socket.Shutdown();
+        _socket.shutdown();
         StartTime = null;
     }
 //    /// <summary>
@@ -112,8 +119,8 @@ public class CoAPPeer {
     /// </summary>
     /// <param name="pack"></param>
     /// <returns></returns>
-    protected bool IsSupportedRequest(CoAPPackage pack)
+    protected boolean IsSupportedRequest(CoAPPackage pack)
     {
-        return SupportedRequest.Contains(pack.Code);
+        return SupportedRequest.contains(pack.getCode());
     }
 }

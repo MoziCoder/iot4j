@@ -137,7 +137,7 @@ public class CoAPClient extends CoAPPeer{
     /// </summary>
     /// <param name="pack"></param>
     /// <returns>MessageId</returns>
-    public  char SendMessage(String host,int port,CoAPPackage pack)
+    public  char sendMessage(String host, int port, CoAPPackage pack)
     {
 //        if (pack.getMesssageId() == 0)
 //        {
@@ -207,7 +207,7 @@ public class CoAPClient extends CoAPPeer{
             //发起通讯
             if (!String.IsNullOrEmpty(uri.Host))
             {
-                SendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
+                sendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
             }
             else
             {
@@ -252,7 +252,7 @@ public class CoAPClient extends CoAPPeer{
             //发起通讯
             if (!String.IsNullOrEmpty(uri.Host))
             {
-                SendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
+                sendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
             }
             else
             {

@@ -29,6 +29,9 @@ public class CoAPCode extends AbsClassEnum
     public String getName(){
         return _name;
     }
+    public String getDescription(){
+        return _description;
+    }
     /**
      *
     */

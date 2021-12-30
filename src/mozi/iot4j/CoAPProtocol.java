@@ -76,7 +76,7 @@ public class CoAPOption {
 
 
     public Uint32 getDeltaValue() {
-        return (Uint32) (_delta + _deltaExtend);
+        return new Uint32 (_delta+ _deltaExtend);
     }
 
     public void setDeltaValue(Uint32 deltaValue) {
@@ -97,7 +97,7 @@ public class CoAPOption {
      * 长度总值<see cref="Length"/>+<see cref="LengthExtend"/>
      */
     public Uint32 getLengthValue() {
-        return (Uint32) (_length + _lengthExtend);
+        return new Uint32 (_length + _lengthExtend);
     }
 
     public void setLengthValue(Uint32 _lengthValue) {
@@ -179,7 +179,7 @@ public class CoAPOption {
 
     public void setValue(OptionValue optValue) {
         _optValue = optValue;
-        _lenValue = optValue != null ? (Uint32) optValue.getLength() : 0;
+        _lenValue = optValue != null ? new Uint32(optValue.getLength() : 0);
     }
 
     private byte[] Pack;

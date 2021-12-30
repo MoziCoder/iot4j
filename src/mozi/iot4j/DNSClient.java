@@ -9,11 +9,11 @@ import javax.naming.NamingException;
  * @date 2021/12/29
  */
 public class DNSClient {
-    public String getDomainAddress(String domain){
-//        try {
-//            DnsClient dc=new DnsClient()
-//        } catch (NamingException e) {
-//            e.printStackTrace();
-//        }
-    }
+//    public String getDomainAddress(String domain){
+////        try {
+////            DnsClient dc=new DnsClient()
+////        } catch (NamingException e) {
+////            e.printStackTrace();
+////        }
+//    }
 }

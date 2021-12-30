@@ -55,7 +55,7 @@ public class UnsignedIntegerOptionValue extends OptionValue
     @Override
     public void setValue(Object value) {
 
-        uint num = (uint)value;
+        Uint32 num = new Uint32((Integer)value);
         byte[] data = BitConverter.GetBytes(num);
 
         if (num < 256) //2~8
@@ -164,7 +164,6 @@ public class BlockOptionValue extends OptionValue
         {
             num |= 8;
         }
-
         if (_num < 16)
         {
             data = new byte[1];
@@ -188,7 +187,7 @@ public class BlockOptionValue extends OptionValue
         _size = (char)Math.pow(2, (((byte)(pack[pack.length-1] << 5)) >> 5) + 4);
         _moreFlag = (pack[pack.length-1] & 8) == 8;
         byte[] data = new byte[4];
-        System.arraycopy(value.Revert(), 0, data, data.length - pack.length, pack.length);
+        System.arraycopy(pack.Revert(), 0, data, data.length - pack.length, pack.length);
         _num = BitConverter.ToUInt32(data, 0);
 
     }

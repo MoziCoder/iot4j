@@ -140,6 +140,7 @@ public class CoAPPackage
         System.arraycopy(data, 2, arrMsgId, 0, 2);
         System.arraycopy(data, 2 + 2, arrToken, 0, arrToken.length);
         pack.setToken( arrToken);
+
         pack.setMesssageId(BitConverter.ToUInt16(arrMsgId.Revert(), 0));
         //3+2+arrToken.Length+1开始是Option部分
         int bodySplitterPos = 2 + 2 + arrToken.length;
@@ -170,7 +171,7 @@ public class CoAPPackage
                 option.setDeltaExtend(BitConverter.ToUInt16(arrDeltaExt.Revert(), 0));
             }
             //赋默认值
-            option.setOption((CoAPOption)AbsClassEnum.Get(String.valueOf(option.getDeltaValue() + deltaSum),CoAPOptionDefine.class));
+            option.setOption((CoAPOption)AbsClassEnum.Get(option.getDeltaValue().plus(deltaSum).toString(),CoAPOptionDefine.class));
             //TODO 此处需要验证Java语言下的执行效果
             if (Object.ReferenceEquals(null, option.getOption()))
             {
@@ -195,7 +196,7 @@ public class CoAPPackage
                 option.setLengthExtend(BitConverter.ToUInt16(arrLengthExt.Revert(), 0));
             }
 
-            option.setValue(new byte[option.getLengthValue()]);
+            option.getValue().setValue(new byte[(int) option.getLengthValue().getValue()]);
             System.arraycopy(data, bodySplitterPos + 1 + lenDeltaExt + lenLengthExt, option.getValue().getPack(), 0, option.getValue().getLength());
             pack.Options.add(option);
             deltaSum += option.getDelta();
@@ -336,7 +337,7 @@ public class CoAPPackage
         data.add((byte)(((byte)_code.getCategory() << 5) | ((byte)(_code.getDetail() << 3) >> 3)));
         data.addAll(BitConverter.GetBytes(_msgId).Revert());
         data.addAll(_token);
-        Uint32 delta = 0;
+        Uint32 delta = new Uint32(0);
 
         for (CoaAPOption op:Options)
         {

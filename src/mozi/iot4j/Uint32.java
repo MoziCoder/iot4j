@@ -67,6 +67,19 @@ public class Uint32 implements Comparable {
             return 0;
         }
     }
+    public boolean gt(int obj){
+        return compareTo(obj)>0;
+    }
+    public boolean ge(int obj){
+        return  compareTo(obj)>=0;
+    }
+    public boolean lt(int obj){
+        return  compareTo(obj)<0;
+    }
+    public boolean le(int obj){
+       return compareTo(obj)<=0;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -110,7 +123,18 @@ public class Uint32 implements Comparable {
         setValue(this.value%that.getValue());
         return this;
     }
-
+    /**
+     * 转字节流
+     * @return
+     */
+    public byte[] toBytes(){
+        byte[] targets = new byte[4];
+        targets[0] = (byte) (value & 0xff);// 最低位
+        targets[1] = (byte) ((value >> 8) & 0xff);// 次低位
+        targets[2] = (byte) ((value >> 16) & 0xff);// 次高位
+        targets[3] = (byte) (value >>> 24);// 最高位,无符号右移。
+        return targets;
+    }
     @Override
     public int compareTo(Object o) {
         return 0;

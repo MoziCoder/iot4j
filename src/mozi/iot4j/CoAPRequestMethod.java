@@ -4,16 +4,14 @@ package mozi.iot4j;
  * 代码 8bits=3bits+5bits
  * 高3位为分类
  * 低5位为明细
- *
- *  0.00      Indicates an Empty message (see Section 4.1).
- *  0.01-0.31 Indicates a request.Values in this range are assigned by the "CoAP Method Codes" sub-registry(see Section 12.1.1).
- *    0.01  GET    | [RFC7252]
- *    0.02  POST   | [RFC7252]
- *    0.03  PUT    | [RFC7252]
- *    0.04  DELETE | [RFC7252]
- *
- *
-*/
+ * <p>
+ * 0.00      Indicates an Empty message (see Section 4.1).
+ * 0.01-0.31 Indicates a request.Values in this range are assigned by the "CoAP Method Codes" sub-registry(see Section 12.1.1).
+ * 0.01  GET    | [RFC7252]
+ * 0.02  POST   | [RFC7252]
+ * 0.03  PUT    | [RFC7252]
+ * 0.04  DELETE | [RFC7252]
+ */
 // 代码 8bits=3bits+5bits
 // 高3位为分类
 // 低5位为明细
@@ -62,17 +60,15 @@ package mozi.iot4j;
  * @author Jason
  * @date 2021/12/29
  */
-public class CoAPRequestMethod extends CoAPCode
-        {
+public class CoAPRequestMethod extends CoAPCode {
 
-public static CoAPRequestMethod Get = new CoAPRequestMethod("GET", "", (byte)0, (byte)1);
-public static CoAPRequestMethod Post = new CoAPRequestMethod("POST", "", (byte)0, (byte)2);
-public static CoAPRequestMethod Put = new CoAPRequestMethod("PUT", "", (byte)0, (byte)3);
-public static CoAPRequestMethod Delete = new CoAPRequestMethod("DELETE", "", (byte)0, (byte)4);
+    public static CoAPRequestMethod Get = new CoAPRequestMethod("GET", "", (byte) 0, (byte) 1);
+    public static CoAPRequestMethod Post = new CoAPRequestMethod("POST", "", (byte) 0, (byte) 2);
+    public static CoAPRequestMethod Put = new CoAPRequestMethod("PUT", "", (byte) 0, (byte) 3);
+    public static CoAPRequestMethod Delete = new CoAPRequestMethod("DELETE", "", (byte) 0, (byte) 4);
 
-        protected CoAPRequestMethod(String name, String description, byte category, byte detail)
-        {
+    protected CoAPRequestMethod(String name, String description, byte category, byte detail) {
 
-            super(name, description, category, detail);
-        }
+        super(name, description, category, detail);
+    }
 }

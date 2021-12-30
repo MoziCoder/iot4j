@@ -42,7 +42,7 @@ public class Uint32 implements Comparable {
 
     @Override
     public int hashCode() {
-        return ((Long) value).hashCode();
+        return value.hashCode();
     }
 
     public String toString() {
@@ -66,6 +66,9 @@ public class Uint32 implements Comparable {
         }else{
             return 0;
         }
+    }
+    public boolean gt(Uint32 obj){
+        return compareTo(obj)>0;
     }
     public boolean gt(int obj){
         return compareTo(obj)>0;

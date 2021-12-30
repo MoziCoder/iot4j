@@ -1,11 +1,5 @@
 package mozi.iot4j;
 
-import mozi.iot4j.optionvalues.ArrayByteOptionValue;
-import mozi.iot4j.optionvalues.ByteStreamUtil;
-import mozi.iot4j.optionvalues.OptionValue;
-
-import java.io.ByteArrayOutputStream;
-
 /*
  * CoAP协议
  * @author Jason

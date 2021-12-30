@@ -1,5 +1,6 @@
 package mozi.iot4j.optionvalues;
 
+import mozi.iot4j.ByteStreamUtil;
 import mozi.iot4j.Uint32;
 
 /**

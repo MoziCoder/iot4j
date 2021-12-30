@@ -7,93 +7,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.List;
 
 @Target(ElementType.PARAMETER)
 @interface BlockDefineCategory{};
-
-/**
- * 仿枚举 抽象类
- * @author Jason
- * @date 2021/12/29
-*/
-public abstract class AbsClassEnum
-{
-    protected abstract String getTag();
-    /// <summary>
-    /// 获取方法 不区分标识符大小写
-    /// </summary>
-    /// <param name="name"></param>
-    /// <returns></returns>
-    public static AbsClassEnum get(String tag, Class cls)
-    {
-        //T t = Activator.CreateInstance<T>();
-        AbsClassEnum rv;
-        try {
-            Field[] pis = cls.getDeclaredFields();
-            for(Field info:pis)
-            {
-                info.setAccessible(true);
-                //TODO 此处能否得到预期结果
-
-                Object obj=info.get(null);
-                if(null!=obj&&(obj.getClass().isInstance( cls.getClass()))){
-                      if(((AbsClassEnum)obj).getTag().equals(tag)){
-                          rv=(AbsClassEnum)obj;
-
-                      }
-                }
-            }
-        }catch (Exception ex) {
-            return null;
-        }
-    }
-
-//    /// <summary>
-//    /// 此处判断标识符是否相等,区分大小写
-//    /// <para>
-//    ///     如果要判断子对象是否等于<see cref="null"/>，请使用<see cref="object.Equals(object, object)"/>
-//    /// </para>
-//    /// </summary>
-//    /// <param name="obj"></param>
-//    /// <returns></returns>
-//    public override bool Equals(object obj)
-//{
-//    return obj is AbsClassEnum && ((AbsClassEnum)obj).Tag.Equals(Tag);
-//}
-//    /// <summary>
-//    /// 重载==
-//    /// <para>
-//    ///     如果要判断子对象是否等于<see cref="null"/>，请使用<see cref="object.Equals(object, object)"/>
-//    /// </para>
-//    /// </summary>
-//    /// <param name="a"></param>
-//    /// <param name="b"></param>
-//    /// <returns></returns>
-//    public static bool operator ==(AbsClassEnum a, AbsClassEnum b)
-//    {
-//        return (object)b != null && (object)a != null && a.Tag.Equals(b.Tag);
-//    }
-//
-//    /// <summary>
-//    /// 重载!=
-//    /// <para>
-//    ///     如果要判断子对象是否等于<see cref="null"/>，请使用<see cref="object.Equals(object, object)"/>
-//    /// </para>
-//    /// </summary>
-//    /// <param name="a"></param>
-//    /// <param name="b"></param>
-//    /// <returns></returns>
-//    public static bool operator !=(AbsClassEnum a, AbsClassEnum b)
-//    {
-//        return (object)a == null || (object)b == null || !a.Tag.Equals(b.Tag);
-//    }
-//
-//    public override int GetHashCode()
-//{
-//    return Tag.GetHashCode();
-//}
-}
 
 /**
  * @author Jason
@@ -171,9 +87,10 @@ public class CoAPPackage
                 option.setDeltaExtend(ByteStreamUtil.charFromBytes(arrDeltaExt));
             }
             //赋默认值
-            option.setOption((CoAPOption)AbsClassEnum.get(option.getDeltaValue().plus(deltaSum).toString(),CoAPOptionDefine.class));
+            option.setOption((CoAPOptionDefine) AbsClassEnum.get(option.getDeltaValue().plus(deltaSum).toString(),CoAPOptionDefine.class));
             //TODO 此处需要验证Java语言下的执行效果
-            if (Object.ReferenceEquals(null, option.getOption()))
+
+            if (null==option.getOption())
             {
                 option.setOption(CoAPOptionDefine.Unknown);
             }
@@ -376,7 +293,14 @@ public class CoAPPackage
         CoAPOption option = new CoAPOption();
         option.setOption(define);
         option.setValue(optionValue);
-        var optGreater = Options.FindIndex(x => x.DeltaValue > option.DeltaValue);
+        int optGreater=0;
+
+        for (CoAPOption op: Options) {
+            if(op.getDeltaValue().gt(option.getDeltaValue())){
+                optGreater=Options.indexOf(op);
+            }
+            //var optGreater = Options.FindIndex(x => x.DeltaValue > option.DeltaValue);
+        }
         if (optGreater < 0)
         {
             optGreater = Options.size();
@@ -438,7 +362,12 @@ public class CoAPPackage
     {
         if (define == CoAPOptionDefine.Block1 || define == CoAPOptionDefine.Block2)
         {
-            CoAPOption opt = Options.Find(x => x.Option == define);
+            CoAPOption opt = null;
+            for (CoAPOption op:Options){
+                if(op.getOption()==define){
+                    opt=op;
+                }
+            }
             StringOptionValue v = new StringOptionValue() {};
             v.setValue(optionValue);
             //TODO 此处判断有问题

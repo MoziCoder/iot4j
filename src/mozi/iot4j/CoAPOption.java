@@ -2,6 +2,8 @@ package mozi.iot4j;
 
 import mozi.iot4j.optionvalues.ArrayByteOptionValue;
 import mozi.iot4j.optionvalues.OptionValue;
+import mozi.iot4j.utils.ByteStreamUtil;
+import mozi.iot4j.utils.Uint32;
 
 import java.io.ByteArrayOutputStream;
 

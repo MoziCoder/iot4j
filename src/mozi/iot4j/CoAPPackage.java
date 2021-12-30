@@ -1,11 +1,12 @@
 package mozi.iot4j;
 
 import mozi.iot4j.optionvalues.*;
+import mozi.iot4j.utils.ByteStreamUtil;
+import mozi.iot4j.utils.Uint32;
 
 import java.io.ByteArrayOutputStream;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 @Target(ElementType.PARAMETER)
@@ -319,7 +320,7 @@ public class CoAPPackage
     {
         CoAPOption option = new CoAPOption();
         option.setOption(define);
-        var ao=new ArrayByteOptionValue() { };
+        ArrayByteOptionValue ao=new ArrayByteOptionValue() { };
         ao.setValue(optionValue);
         option.setValue(ao);
         Options.add(option);

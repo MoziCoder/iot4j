@@ -1,4 +1,4 @@
-package mozi.iot4j;
+package mozi.iot4j.utils;
 
 /**
  * Uint32数据类型

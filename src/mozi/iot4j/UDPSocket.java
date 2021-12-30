@@ -8,13 +8,13 @@ import java.net.*;
  * @author Jason
  * @date 2021/12/29
  */
-public class UdpSocket {
+public class UDPSocket {
 
     private int _port;
 
     private DatagramSocket _sc;
 
-    public UdpSocket(){
+    public UDPSocket(){
 
     }
 

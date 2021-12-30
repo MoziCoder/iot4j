@@ -1,8 +1,8 @@
 package mozi.iot4j.optionvalues;
 
-import mozi.iot4j.ByteStreamUtil;
+import mozi.iot4j.utils.ByteStreamUtil;
 import mozi.iot4j.Logarithm;
-import mozi.iot4j.Uint32;
+import mozi.iot4j.utils.Uint32;
 
 /**
  * 分块选项 数据结构 适用Block1 Block2 长度为可变长度，可为8bits 16bits 24bits

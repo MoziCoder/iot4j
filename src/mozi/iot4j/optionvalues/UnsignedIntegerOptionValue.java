@@ -1,7 +1,7 @@
 package mozi.iot4j.optionvalues;
 
-import mozi.iot4j.ByteStreamUtil;
-import mozi.iot4j.Uint32;
+import mozi.iot4j.utils.ByteStreamUtil;
+import mozi.iot4j.utils.Uint32;
 
 /**
  * uint选项值，.Net的数值类型与网络包数据包排序不同，故字节数组会进行数组翻转

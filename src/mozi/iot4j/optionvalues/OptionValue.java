@@ -1,7 +1,5 @@
 package mozi.iot4j.optionvalues;
 
-import mozi.iot4j.Uint32;
-
 /**
 * 选项值>=0 bytes
 * 空 字节数组 数字 ASCII/UTF-8字符串

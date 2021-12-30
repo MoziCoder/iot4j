@@ -7,8 +7,6 @@ package mozi.iot4j.optionvalues;
  */
 public class StringOptionValue extends OptionValue
 {
-    private byte[] _pack;
-
     @Override
     public Object getValue() {
         try {

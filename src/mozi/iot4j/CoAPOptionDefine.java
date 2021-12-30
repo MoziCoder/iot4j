@@ -82,13 +82,13 @@ public class CoAPOptionDefine extends AbsClassEnum {
 
         _optionNumber=optionNumber;
     }
-//
-//    public String getName() {
-//        return _name;
-//    }
-//    public  char getOptionNumber() {
-//        return _optionNumber;
-//    }
+
+    public String getName() {
+        return _name;
+    }
+    public  char getOptionNumber() {
+        return _optionNumber;
+    }
 
     public boolean getCritical() {
         return (((byte)_optionNumber) & 0x01) == 0x01;
@@ -114,7 +114,4 @@ public class CoAPOptionDefine extends AbsClassEnum {
         return String.valueOf(_optionNumber);
     }
 
-    public char getOptionNumber(){
-        return _optionNumber;
-    }
 };

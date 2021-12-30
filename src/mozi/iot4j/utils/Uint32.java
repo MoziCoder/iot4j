@@ -53,7 +53,7 @@ public class Uint32 implements Comparable {
         if (obj == null) {
             return -1;
         }
-        if (this.value == obj.value) {
+        if (this.value.equals(obj.value)) {
             return 0;
         }
         return this.value > obj.value ? 1 : 0;
@@ -92,7 +92,7 @@ public class Uint32 implements Comparable {
         if (getClass() != obj.getClass())
             return false;
         final Uint32 other = (Uint32) obj;
-        if (value != other.value)
+        if (!value.equals(other.value))
             return false;
         return true;
     }

@@ -1,5 +1,6 @@
 package mozi.iot4j;
 
+import mozi.iot4j.utils.Uint32;
 import mozi.iot4j.utils.UriInfo;
 
 /**
@@ -138,11 +139,11 @@ public class CoAPClient extends CoAPPeer{
     /// <returns>MessageId</returns>
     public  char SendMessage(String host,int port,CoAPPackage pack)
     {
-        if (pack.MesssageId == 0)
-        {
-            pack.MesssageId = _cacheManager.GenerateMessageId();
-        }
-        _socket.SendTo(pack.Pack(), host, port);
+//        if (pack.getMesssageId() == 0)
+//        {
+//            pack.MesssageId = _cacheManager.GenerateMessageId();
+//        }
+        _socket.sendTo(pack.Pack(), host, port);
         return pack.getMesssageId();
     }
 
@@ -151,7 +152,7 @@ public class CoAPClient extends CoAPPeer{
     /// </summary>
     /// <param name="uri"></param>
     /// <param name="cp"></param>
-    private void PackUrl(ref UriInfo uri,ref CoAPPackage cp)
+    private void PackUrl(UriInfo uri,CoAPPackage cp)
     {
         //注入域名
         if (!String.IsNullOrEmpty(uri.Domain))
@@ -161,15 +162,15 @@ public class CoAPClient extends CoAPPeer{
         //注入端口号
         if (uri.Port > 0 && (uri.Port != CoAPProtocol.Port || uri.Port != CoAPProtocol.SecurePort))
         {
-            cp.SetOption(CoAPOptionDefine.UriPort, (uint)uri.Port);
+            cp.SetOption(CoAPOptionDefine.UriPort, new Uint32(uri.Port));
         }
         //注入路径
-        for (int i = 0; i < uri.Paths.Length; i++)
+        for (int i = 0; i < uri.Paths.length; i++)
         {
             cp.SetOption(CoAPOptionDefine.UriPath, uri.Paths[i]);
         }
         //注入查询参数
-        for (int i = 0; i < uri.Queries.Length; i++)
+        for (int i = 0; i < uri.Queries.length; i++)
         {
             cp.SetOption(CoAPOptionDefine.UriQuery, uri.Queries[i]);
         }
@@ -191,19 +192,18 @@ public class CoAPClient extends CoAPPeer{
     public char Get(String url,CoAPMessageType msgType)
     {
 
-        CoAPPackage cp = new CoAPPackage
-        {
-            Code = CoAPRequestMethod.Get,
-                    Token = CacheControl.GenerateToken(8),
-                    MesssageId = _cacheManager.GenerateMessageId(),
-                    MessageType = msgType ?? CoAPMessageType.Confirmable
-        };
-
+        CoAPPackage cp = new CoAPPackage();
+        cp.setCode(CoAPRequestMethod.Get);
+        //TODO Token要实现一个生成器
+        cp.setToken(new byte[]{0x01,0x02,0x03,0x04});
+        //TODO MessageId的生成配合拥塞控制算法，此处指定为固定值
+        cp.setMesssageId((char)123456);
+        cp.setMessageType(msgType==null?CoAPMessageType.Confirmable:msgType);
         UriInfo uri = UriInfo.Parse(url);
 
         if (!String.IsNullOrEmpty(uri.Url))
         {
-            PackUrl(ref uri,ref cp);
+            PackUrl(uri, cp);
             //发起通讯
             if (!String.IsNullOrEmpty(uri.Host))
             {
@@ -218,7 +218,7 @@ public class CoAPClient extends CoAPPeer{
         {
             throw new Exception($"本地无法解析指定的链接地址:{url}");
         }
-        return cp.MesssageId;
+        return cp.getMesssageId();
     }
     /// <summary>
     /// Get方法，默认消息类型为<see cref="CoAPMessageType.Confirmable"/>
@@ -232,23 +232,22 @@ public class CoAPClient extends CoAPPeer{
 
     public char Post(String url, CoAPMessageType msgType, ContentFormat contentType,byte[] postBody)
     {
-        CoAPPackage cp = new CoAPPackage
-        {
-            Code = CoAPRequestMethod.Post,
-                    Token = CacheControl.GenerateToken(8),
-                    MesssageId = _cacheManager.GenerateMessageId(),
-                    MessageType = msgType ?? CoAPMessageType.Confirmable
-        };
-
+        CoAPPackage cp = new CoAPPackage();
+        cp.setCode(CoAPRequestMethod.Post);
+        //TODO Token要实现一个生成器
+        cp.setToken(new byte[]{0x01,0x02,0x03,0x04});
+        //TODO MessageId的生成配合拥塞控制算法，此处指定为固定值
+        cp.setMesssageId((char)123456);
+        cp.setMessageType(msgType==null?CoAPMessageType.Confirmable:msgType);
         UriInfo uri = UriInfo.Parse(url);
 
         if (!String.IsNullOrEmpty(uri.Url))
         {
-            PackUrl(ref uri, ref cp);
+            PackUrl(uri, cp);
 
             cp.SetContentType(contentType);
 
-            cp.Payload = postBody;
+            cp.setPayload( postBody);
 
             //发起通讯
             if (!String.IsNullOrEmpty(uri.Host))

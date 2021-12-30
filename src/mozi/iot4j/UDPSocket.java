@@ -40,7 +40,7 @@ public class UDPSocket {
         }
     }
 
-    public void send(String host,int port,byte[] data){
+    public void sendTo(byte[] data,String host,int port){
         DatagramPacket dp=new DatagramPacket(data,data.length,new InetSocketAddress(host,port));
         try {
             _sc.send(dp);

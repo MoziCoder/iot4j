@@ -1,5 +1,9 @@
 package mozi.iot4j;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
 /**
  * CoAP通讯端
  * @author Jason
@@ -20,12 +24,11 @@ public class CoAPPeer {
     /// <summary>
     /// 启动时间
     /// </summary>
-    public DateTime StartTime { get; private set; }
+    public Date StartTime { get; private set; }
 
     public CoAPPeer()
     {
         _socket = new UDPSocket();
-        _socket.AfterReceiveEnd += Socket_AfterReceiveEnd;
     }
     /// <summary>
     /// 以指定端口启动<see cref="F:Port"/>，如果不配置端口则使用默认端口
@@ -42,7 +45,7 @@ public class CoAPPeer {
     {
         BindPort = port;
         _socket.Start(BindPort);
-        StartTime = DateTime.Now;
+        StartTime = Calendar.getInstance(TimeZone.getDefault()).getTime();
     }
     /// <summary>
     /// 端口下线
@@ -50,60 +53,60 @@ public class CoAPPeer {
     public void Shutdown()
     {
         _socket.Shutdown();
-        StartTime = DateTime.MinValue;
+        StartTime = null;
     }
-    /// <summary>
-    /// 数据接收完成回调
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="args"></param>
-    protected virtual void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
-    {
-        //CoAPPackage pack2=null;
-
-        ////try
-        ////{
-        //    CoAPPackage pack = CoAPPackage.Parse(args.Data,true);
-
-        //    pack2 = new CoAPPackage()
-        //    {
-        //        Version = 1,
-        //        MessageType = CoAPMessageType.Acknowledgement,
-        //        Token = pack.Token,
-        //        MesssageId = pack.MesssageId,
-        //    };
-
-        //    //判断是否受支持的方法
-        //    if (IsSupportedRequest(pack))
-        //    {
-        //        if (pack.MessageType==CoAPMessageType.Confirmable||pack.MessageType == CoAPMessageType.Acknowledgement)
-        //        {
-        //            pack2.Code = CoAPResponseCode.Content;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        pack2.Code = CoAPResponseCode.MethodNotAllowed;
-        //    }
-
-        //    //检查分块
-
-        //    //检查内容类型
-
-        ////}
-        ////catch (Exception ex)
-        ////{
-        ////    Console.WriteLine(ex.Message);
-        ////}
-        ////finally
-        ////{
-        //    if (pack2 != null)
-        //    {
-        //        _socket.SendTo(pack2.Pack(), args.IP, args.Port);
-        //    }
-        ////}
-
-    }
+//    /// <summary>
+//    /// 数据接收完成回调
+//    /// </summary>
+//    /// <param name="sender"></param>
+//    /// <param name="args"></param>
+//    protected virtual void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
+//    {
+//        //CoAPPackage pack2=null;
+//
+//        ////try
+//        ////{
+//        //    CoAPPackage pack = CoAPPackage.Parse(args.Data,true);
+//
+//        //    pack2 = new CoAPPackage()
+//        //    {
+//        //        Version = 1,
+//        //        MessageType = CoAPMessageType.Acknowledgement,
+//        //        Token = pack.Token,
+//        //        MesssageId = pack.MesssageId,
+//        //    };
+//
+//        //    //判断是否受支持的方法
+//        //    if (IsSupportedRequest(pack))
+//        //    {
+//        //        if (pack.MessageType==CoAPMessageType.Confirmable||pack.MessageType == CoAPMessageType.Acknowledgement)
+//        //        {
+//        //            pack2.Code = CoAPResponseCode.Content;
+//        //        }
+//        //    }
+//        //    else
+//        //    {
+//        //        pack2.Code = CoAPResponseCode.MethodNotAllowed;
+//        //    }
+//
+//        //    //检查分块
+//
+//        //    //检查内容类型
+//
+//        ////}
+//        ////catch (Exception ex)
+//        ////{
+//        ////    Console.WriteLine(ex.Message);
+//        ////}
+//        ////finally
+//        ////{
+//        //    if (pack2 != null)
+//        //    {
+//        //        _socket.SendTo(pack2.Pack(), args.IP, args.Port);
+//        //    }
+//        ////}
+//
+//    }
     /// <summary>
     /// 是否受支持的请求方法<see cref="CoAPRequestMethod"/>
     /// </summary>

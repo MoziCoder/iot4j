@@ -1,5 +1,6 @@
 package mozi.iot4j;
 
+import mozi.iot4j.utils.StringUtil;
 import mozi.iot4j.utils.Uint32;
 import mozi.iot4j.utils.UriInfo;
 
@@ -155,7 +156,7 @@ public class CoAPClient extends CoAPPeer{
     private void PackUrl(UriInfo uri,CoAPPackage cp)
     {
         //注入域名
-        if (!String.IsNullOrEmpty(uri.Domain))
+        if (StringUtil.isNullOrEmpty(uri.Domain))
         {
             cp.SetOption(CoAPOptionDefine.UriHost, uri.Domain);
         }
@@ -189,8 +190,7 @@ public class CoAPClient extends CoAPPeer{
     /// </param>
     /// <param name="msgType">消息类型，默认为<see cref="CoAPMessageType.Confirmable"/></param>
     /// <returns>MessageId</returns>
-    public char Get(String url,CoAPMessageType msgType)
-    {
+    public char Get(String url,CoAPMessageType msgType) throws Exception {
 
         CoAPPackage cp = new CoAPPackage();
         cp.setCode(CoAPRequestMethod.Get);
@@ -201,22 +201,22 @@ public class CoAPClient extends CoAPPeer{
         cp.setMessageType(msgType==null?CoAPMessageType.Confirmable:msgType);
         UriInfo uri = UriInfo.Parse(url);
 
-        if (!String.IsNullOrEmpty(uri.Url))
+        if (!StringUtil.isNullOrEmpty(uri.Url))
         {
             PackUrl(uri, cp);
             //发起通讯
-            if (!String.IsNullOrEmpty(uri.Host))
+            if (!StringUtil.isNullOrEmpty(uri.Host))
             {
                 sendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
             }
             else
             {
-                throw new Exception($"DNS无法解析指定的域名:{uri.Domain}");
+                throw new Exception(String.format("DNS无法解析指定的域名:%s",uri.Domain));
             }
         }
         else
         {
-            throw new Exception($"本地无法解析指定的链接地址:{url}");
+            throw new Exception(String.format("本地无法解析指定的链接地址:%s",url));
         }
         return cp.getMesssageId();
     }
@@ -225,13 +225,11 @@ public class CoAPClient extends CoAPPeer{
     /// </summary>
     /// <param name="url"></param>
     /// <returns>MessageId</returns>
-    public char Get(String url)
-    {
+    public char Get(String url) throws Exception {
         return Get(url, CoAPMessageType.Confirmable);
     }
 
-    public char Post(String url, CoAPMessageType msgType, ContentFormat contentType,byte[] postBody)
-    {
+    public char Post(String url, CoAPMessageType msgType, ContentFormat contentType,byte[] postBody) throws Exception {
         CoAPPackage cp = new CoAPPackage();
         cp.setCode(CoAPRequestMethod.Post);
         //TODO Token要实现一个生成器
@@ -241,7 +239,7 @@ public class CoAPClient extends CoAPPeer{
         cp.setMessageType(msgType==null?CoAPMessageType.Confirmable:msgType);
         UriInfo uri = UriInfo.Parse(url);
 
-        if (!String.IsNullOrEmpty(uri.Url))
+        if (!StringUtil.isNullOrEmpty(uri.Url))
         {
             PackUrl(uri, cp);
 
@@ -250,18 +248,18 @@ public class CoAPClient extends CoAPPeer{
             cp.setPayload( postBody);
 
             //发起通讯
-            if (!String.IsNullOrEmpty(uri.Host))
+            if (!StringUtil.isNullOrEmpty(uri.Host))
             {
                 sendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
             }
             else
             {
-                throw new Exception($"DNS无法解析指定的域名:{uri.Domain}");
+                throw new Exception(String.format("DNS无法解析指定的域名:%s",uri.Domain));
             }
         }
         else
         {
-            throw new Exception($"本地无法解析指定的链接地址:{url}");
+            throw new Exception(String.format("本地无法解析指定的链接地址:%s",url));
         }
         return cp.getMesssageId();
     }

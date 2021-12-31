@@ -12,8 +12,6 @@ import java.util.TimeZone;
  */
 public class CoAPPeer {
 
-
-
     protected  UDPSocket _socket;
 
     protected int BindPort = CoAPProtocol.Port;
@@ -21,14 +19,22 @@ public class CoAPPeer {
     protected ArrayList<CoAPCode> SupportedRequest = new ArrayList<CoAPCode>() ;
 
     /// <summary>
-    /// 服务端口
-    /// </summary>
-    public int Port { get { return BindPort; } protected set { BindPort = value; } }
-    /// <summary>
     /// 启动时间
     /// </summary>
-    public Date StartTime { get; private set; }
+    public Date _startTime;
 
+    public int getBindPort() {
+        return BindPort;
+    }
+    public void setBindPort(int port){
+        BindPort=port;
+    }
+    public Date getStartTime(){
+        return _startTime;
+    }
+    protected void setStartTime(Date dt){
+        _startTime=dt;
+    }
     public CoAPPeer()
     {
         SupportedRequest.add(CoAPRequestMethod.Get);
@@ -52,7 +58,7 @@ public class CoAPPeer {
     {
         BindPort = port;
         _socket.start(BindPort);
-        StartTime = Calendar.getInstance(TimeZone.getDefault()).getTime();
+        _startTime = Calendar.getInstance(TimeZone.getDefault()).getTime();
     }
     /// <summary>
     /// 端口下线
@@ -60,7 +66,7 @@ public class CoAPPeer {
     public void Shutdown()
     {
         _socket.shutdown();
-        StartTime = null;
+        _startTime = null;
     }
 //    /// <summary>
 //    /// 数据接收完成回调

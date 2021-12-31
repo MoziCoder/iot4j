@@ -1,7 +1,5 @@
 package mozi.iot4j;
 
-import com.sun.jndi.dns.DnsClient;
-import javax.naming.NamingException;
 
 /**
  * DNS查询客户端
@@ -9,11 +7,8 @@ import javax.naming.NamingException;
  * @date 2021/12/29
  */
 public class DNSClient {
-//    public String getDomainAddress(String domain){
-////        try {
-////            DnsClient dc=new DnsClient()
-////        } catch (NamingException e) {
-////            e.printStackTrace();
-////        }
-//    }
+    public static String getDomainAddress(String domain){
+        //TODO DNS查询未实现
+        return "";
+    }
 }

@@ -1,4 +1,4 @@
-package mozi.iot4j;
+package org.mozi.iot4j;
 /**
  * CoAP传输时间参数
  * @author Jason

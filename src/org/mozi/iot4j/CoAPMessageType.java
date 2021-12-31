@@ -1,4 +1,4 @@
-package mozi.iot4j;
+package org.mozi.iot4j;
 
 /**
  * 消息类型

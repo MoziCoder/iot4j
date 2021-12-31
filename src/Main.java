@@ -1,6 +1,4 @@
-import mozi.iot4j.CoAPClient;
-
-import java.io.Console;
+import org.mozi.iot4j.CoAPClient;
 
 public class Main{
     /**

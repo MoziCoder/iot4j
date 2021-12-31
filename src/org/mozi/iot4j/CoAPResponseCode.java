@@ -1,4 +1,4 @@
-package mozi.iot4j;
+package org.mozi.iot4j;
 // 代码 8bits=3bits+5bits
 // 高3位为分类
 // 低5位为明细

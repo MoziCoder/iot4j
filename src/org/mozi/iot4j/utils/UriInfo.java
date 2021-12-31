@@ -1,6 +1,6 @@
-package mozi.iot4j.utils;
+package org.mozi.iot4j.utils;
 
-import mozi.iot4j.DNSClient;
+import org.mozi.iot4j.DNSClient;
 
 import java.util.regex.Pattern;
 

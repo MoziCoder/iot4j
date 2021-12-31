@@ -1,8 +1,4 @@
-package mozi.iot4j.utils;
-
-import mozi.iot4j.DNSClient;
-
-import java.util.regex.Pattern;
+package org.mozi.iot4j.utils;
 
 /**
  * 数值类型转bytes[]数组

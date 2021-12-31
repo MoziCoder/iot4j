@@ -1,8 +1,8 @@
-package mozi.iot4j;
+package org.mozi.iot4j;
 
-import mozi.iot4j.utils.StringUtil;
-import mozi.iot4j.utils.Uint32;
-import mozi.iot4j.utils.UriInfo;
+import org.mozi.iot4j.utils.StringUtil;
+import org.mozi.iot4j.utils.Uint32;
+import org.mozi.iot4j.utils.UriInfo;
 
 /**
  * CoAP对等端
@@ -153,7 +153,7 @@ public class CoAPClient extends CoAPPeer{
     /// </summary>
     /// <param name="uri"></param>
     /// <param name="cp"></param>
-    private void PackUrl(UriInfo uri,CoAPPackage cp)
+    private void PackUrl(UriInfo uri, CoAPPackage cp)
     {
         //注入域名
         if (StringUtil.isNullOrEmpty(uri.Domain))

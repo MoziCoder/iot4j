@@ -1,4 +1,4 @@
-package mozi.iot4j.utils;
+package org.mozi.iot4j.utils;
 
 public class StringUtil {
     public static boolean isNullOrEmpty(String data){

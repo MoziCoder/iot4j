@@ -1,4 +1,4 @@
-package mozi.iot4j.optionvalues;
+package org.mozi.iot4j.optionvalues;
 
 /**
  * 字节数组选项值

@@ -1,4 +1,4 @@
-package mozi.iot4j;
+package org.mozi.iot4j;
 /**
  * 请求码
  * 代码 8bits=3bits+5bits

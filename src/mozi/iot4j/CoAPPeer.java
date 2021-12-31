@@ -26,23 +26,30 @@ public class CoAPPeer {
     public int getBindPort() {
         return BindPort;
     }
+
     public void setBindPort(int port){
         BindPort=port;
     }
+
     public Date getStartTime(){
         return _startTime;
     }
+
     protected void setStartTime(Date dt){
         _startTime=dt;
     }
+
     public CoAPPeer()
     {
+
         SupportedRequest.add(CoAPRequestMethod.Get);
         SupportedRequest.add(CoAPRequestMethod.Post);
         SupportedRequest.add(CoAPRequestMethod.Put);
         SupportedRequest.add(CoAPRequestMethod.Delete );
+
         _socket = new UDPSocket();
     }
+
     /// <summary>
     /// 以指定端口启动<see cref="F:Port"/>，如果不配置端口则使用默认端口
     /// </summary>
@@ -120,6 +127,7 @@ public class CoAPPeer {
 //        ////}
 //
 //    }
+
     /// <summary>
     /// 是否受支持的请求方法<see cref="CoAPRequestMethod"/>
     /// </summary>

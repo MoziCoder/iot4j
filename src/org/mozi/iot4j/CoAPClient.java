@@ -75,7 +75,7 @@ public class CoAPClient extends CoAPPeer{
     /// </summary>
     /// <param name="port"></param>
     /// <returns></returns>
-    public CoAPClient SetPort(int port)
+    public CoAPClient setPort(int port)
     {
         BindPort = port;
         _randomPort = false;
@@ -190,7 +190,7 @@ public class CoAPClient extends CoAPPeer{
     /// </param>
     /// <param name="msgType">消息类型，默认为<see cref="CoAPMessageType.Confirmable"/></param>
     /// <returns>MessageId</returns>
-    public char Get(String url,CoAPMessageType msgType) throws Exception {
+    public char get(String url, CoAPMessageType msgType) throws Exception {
 
         CoAPPackage cp = new CoAPPackage();
         cp.setCode(CoAPRequestMethod.Get);
@@ -225,11 +225,11 @@ public class CoAPClient extends CoAPPeer{
     /// </summary>
     /// <param name="url"></param>
     /// <returns>MessageId</returns>
-    public char Get(String url) throws Exception {
-        return Get(url, CoAPMessageType.Confirmable);
+    public char get(String url) throws Exception {
+        return get(url, CoAPMessageType.Confirmable);
     }
 
-    public char Post(String url, CoAPMessageType msgType, ContentFormat contentType,byte[] postBody) throws Exception {
+    public char post(String url, CoAPMessageType msgType, ContentFormat contentType, byte[] postBody) throws Exception {
         CoAPPackage cp = new CoAPPackage();
         cp.setCode(CoAPRequestMethod.Post);
         //TODO Token要实现一个生成器
@@ -265,12 +265,12 @@ public class CoAPClient extends CoAPPeer{
     }
 
     //TODO 是否会出现安全问题
-    private void Put(String url)
+    private void put(String url)
     {
 
     }
     //TODO 是否会出现安全问题
-    private void Delete(String url)
+    private void delete(String url)
     {
 
     }

@@ -1,6 +1,7 @@
 package org.mozi.iot4j.utils;
 
 import org.mozi.iot4j.DNSClient;
+import sun.misc.Regexp;
 
 import java.util.regex.Pattern;
 
@@ -35,18 +36,19 @@ public class UriInfo
         String[] paths;
         boolean isDomain = false;
 
-        Pattern reg = Pattern.compile("^[a-zA-Z]+://((([a-zA-Z0-9\\.-]+){2,})|(\\[?[a-zA-Z0-9\\.:]+){2,}\\]?)(:\\d+)?((/[a-zA-Z0-9-\\.%]+){0,}(\\?)?([%=a-zA-Z0-9]+(&)?){0,})$");
+        Pattern reg = Pattern.compile("^[a-zA-Z]+://((([a-zA-Z0-9.-]+){2,})|(\\[?[a-zA-Z0-9.:]+){2,}]?)(:\\d+)?((/[a-zA-Z0-9-.%]+){0,}(\\?)?([%=a-zA-Z0-9]+(&)?){0,})$",Pattern.DOTALL);
+
         Pattern regProto = Pattern.compile("[a-zA-Z]+(?=://)");
-        Pattern regHost = Pattern.compile("(?<=\\://)(([a-zA-Z0-9-]+\\.?){2,}|(\\[?[a-zA-Z0-9-\\.:]+){2,}]?)(:\\d+)?");
+        Pattern regHost = Pattern.compile("(?<=://)(([a-zA-Z0-9-]+\\.?){2,}|(\\[?[a-zA-Z0-9-.:]+){2,}]?)(:\\d+)?");
 
         Pattern regIPV4 = Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+(?=:\\d+))|(\\d+\\.\\d+\\.\\d+\\.\\d+)$");
-        Pattern regIPV6 = Pattern.compile("^((?<=\\[)(([a-zA-Z0-9]+(\\.|:)?){2,})(?=\\]))|([a-zA-Z0-9]+(\\.|:)?){2,}$");
+        Pattern regIPV6 = Pattern.compile("^((?<=\\[)(([a-zA-Z0-9]+([.:])?){2,})(?=]))|([a-zA-Z0-9]+([.:])?){2,}$");
         Pattern regDomain = Pattern.compile("^(([a-zA-Z0-9-]+(\\.)?){2,})|(([a-zA-Z0-9-]+(\\.)?){2,}(?=:\\d+))$");
 
-        Pattern regPath = Pattern.compile("(?<=(://(([a-zA-Z0-9-]{1,}\\.?){2,}|(\\[?[a-zA-Z0-9-\\.:]+){2,}]?)(:\\d+)?))(/[a-zA-Z0-9-\\.%]+){1,}((?=\\?))?");
-        Pattern regQuery = Pattern.compile("(?<=\\?)([%=a-zA-Z0-9-]+(&)?){1,}");
+        Pattern regPath = Pattern.compile("(?<=://[a-zA-Z0-9.:]{0,1024})(/[a-zA-Z0-9-.%]{0,1024}){1,1024}((?=\\?))?");
+        Pattern regQuery = Pattern.compile("(?<=\\?)([%=a-zA-Z0-9-]+(&)?){1,1024}");
 
-        if (reg.matcher(url).matches())
+        if (reg.matcher(url).find())
         {
             uri.Url = url;
 
@@ -57,13 +59,13 @@ public class UriInfo
             address = regHost.matcher(url).group();
 
             //IPV4
-            if (regIPV4.matcher(address).matches())
+            if (regIPV4.matcher(address).find())
             {
                 uri.Host = regIPV4.matcher(address).group();
                 sPort = address.replace(uri.Host, "").replace(":", "");
                 //domain
             }
-            else if (regDomain.matcher(address).matches())
+            else if (regDomain.matcher(address).find())
             {
                 uri.Host = regDomain.matcher(address).group();
                 uri.Domain = uri.Host;

@@ -70,7 +70,7 @@ public class CoAPPeer {
     /// <summary>
     /// 端口下线
     /// </summary>
-    public void Shutdown()
+    public void shutdown()
     {
         _socket.shutdown();
         _startTime = null;
@@ -133,7 +133,7 @@ public class CoAPPeer {
     /// </summary>
     /// <param name="pack"></param>
     /// <returns></returns>
-    protected boolean IsSupportedRequest(CoAPPackage pack)
+    protected boolean isSupportedRequest(CoAPPackage pack)
     {
         return SupportedRequest.contains(pack.getCode());
     }

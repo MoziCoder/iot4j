@@ -1,10 +1,8 @@
 package org.mozi.iot4j;
 
-import mozi.iot4j.optionvalues.*;
+import org.mozi.iot4j.optionvalues.*;
 import org.mozi.iot4j.utils.ByteStreamUtil;
 import org.mozi.iot4j.utils.Uint32;
-import org.mozi.iot4j.optionvalues.*;
-
 import java.io.ByteArrayOutputStream;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;

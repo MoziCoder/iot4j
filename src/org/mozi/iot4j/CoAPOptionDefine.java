@@ -106,7 +106,7 @@ public class CoAPOptionDefine extends AbsClassEnum {
 
     public String toString()
     {
-        return String.format("Option Name:%s,OptionNumber:%d,Figure:%s", _name, _optionNumber, String.join(",", _critical ? "Critical" : "", _unsafe ? "UnSafe" : "", _noCacheKey ? "NoCacheKey" : ""));
+        return String.format("Option Name:%s,OptionNumber:%d,Figure:%s", _name, (long)_optionNumber, String.join(",", _critical ? "Critical" : "", _unsafe ? "UnSafe" : "", _noCacheKey ? "NoCacheKey" : ""));
     }
 
     @Override

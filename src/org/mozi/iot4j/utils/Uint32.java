@@ -36,7 +36,7 @@ public class Uint32 implements Comparable {
 
     private void check(long value) {
         if (value < MIN || value > MAX) {
-            throw new IllegalArgumentException(value + " 值必须在 " + MIN + " 到 " + MAX + " 之间");
+            throw new IllegalArgumentException(value + " 值必须介于 " + MIN + " 到 " + MAX + " 之间");
         }
     }
 

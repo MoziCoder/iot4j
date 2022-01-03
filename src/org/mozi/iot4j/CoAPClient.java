@@ -144,7 +144,7 @@ public class CoAPClient extends CoAPPeer{
 //        {
 //            pack.MesssageId = _cacheManager.GenerateMessageId();
 //        }
-        _socket.sendTo(pack.Pack(), host, port);
+        _socket.sendTo(pack.pack(), host, port);
         return pack.getMesssageId();
     }
 
@@ -158,22 +158,22 @@ public class CoAPClient extends CoAPPeer{
         //注入域名
         if (StringUtil.isNullOrEmpty(uri.Domain))
         {
-            cp.SetOption(CoAPOptionDefine.UriHost, uri.Domain);
+            cp.setOption(CoAPOptionDefine.UriHost, uri.Domain);
         }
         //注入端口号
-        if (uri.Port > 0 && (uri.Port != CoAPProtocol.Port || uri.Port != CoAPProtocol.SecurePort))
+        if (uri.Port > 0 && !(uri.Port == CoAPProtocol.Port || uri.Port == CoAPProtocol.SecurePort))
         {
-            cp.SetOption(CoAPOptionDefine.UriPort, new Uint32(uri.Port));
+            cp.setOption(CoAPOptionDefine.UriPort, new Uint32(uri.Port));
         }
         //注入路径
         for (int i = 0; i < uri.Paths.length; i++)
         {
-            cp.SetOption(CoAPOptionDefine.UriPath, uri.Paths[i]);
+            cp.setOption(CoAPOptionDefine.UriPath, uri.Paths[i]);
         }
         //注入查询参数
         for (int i = 0; i < uri.Queries.length; i++)
         {
-            cp.SetOption(CoAPOptionDefine.UriQuery, uri.Queries[i]);
+            cp.setOption(CoAPOptionDefine.UriQuery, uri.Queries[i]);
         }
     }
 
@@ -243,7 +243,7 @@ public class CoAPClient extends CoAPPeer{
         {
             PackUrl(uri, cp);
 
-            cp.SetContentType(contentType);
+            cp.setContentType(contentType);
 
             cp.setPayload( postBody);
 

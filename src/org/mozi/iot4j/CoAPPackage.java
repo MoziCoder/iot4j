@@ -42,7 +42,7 @@ public class CoAPPackage
     * @param data
     * @param isRequest
     */
-    public static CoAPPackage Parse(byte[] data, boolean isRequest)
+    public static CoAPPackage parse(byte[] data, boolean isRequest)
     {
         CoAPPackage pack = new CoAPPackage();
         byte head = data[0];
@@ -242,7 +242,7 @@ public class CoAPPackage
     /**
     * 打包|转为字节流
     */
-    public byte[] Pack()
+    public byte[] pack()
     {
         ByteArrayOutputStream bos=new ByteArrayOutputStream();
         try {
@@ -258,9 +258,9 @@ public class CoAPPackage
             Uint32 delta = new Uint32(0);
 
             for (CoAPOption op : Options) {
-                op.setDeltaValue(new Uint32(op.getOption().getOptionNumber() - delta.getValue()));
+                op.setDeltaValue(new Uint32((long)op.getOption().getOptionNumber() - delta.getValue()));
                 bos.write(op.getPack());
-                delta.minus(op.getDeltaValue());
+                delta.plus(op.getDeltaValue());
             }
             if (_payload != null) {
                 bos.write(CoAPProtocol.HeaderEnd);
@@ -277,9 +277,9 @@ public class CoAPPackage
     *
     * @param define
     */
-    public CoAPPackage SetOption(CoAPOptionDefine define)
+    public CoAPPackage setOption(CoAPOptionDefine define)
     {
-        return SetOption(define, new EmptyOptionValue());
+        return setOption(define, new EmptyOptionValue());
     }
 
     /**
@@ -288,7 +288,7 @@ public class CoAPPackage
     * @param define
     * @param optionValue
     */
-    public CoAPPackage SetOption(CoAPOptionDefine define, OptionValue optionValue)
+    public CoAPPackage setOption(CoAPOptionDefine define, OptionValue optionValue)
     {
         CoAPOption option = new CoAPOption();
         option.setOption(define);
@@ -296,7 +296,7 @@ public class CoAPPackage
         int optGreater=0;
 
         for (CoAPOption op: Options) {
-            if(op.getDeltaValue().gt(option.getDeltaValue())){
+            if(op.getOption().getOptionNumber()>(define.getOptionNumber())){
                 optGreater=Options.indexOf(op);
             }
             //var optGreater = Options.FindIndex(x => x.DeltaValue > option.DeltaValue);
@@ -315,7 +315,7 @@ public class CoAPPackage
     * @param define
     * @param optionValue
     */
-    public CoAPPackage SetOption(CoAPOptionDefine define, byte[] optionValue)
+    public CoAPPackage setOption(CoAPOptionDefine define, byte[] optionValue)
     {
         CoAPOption option = new CoAPOption();
         option.setOption(define);
@@ -332,11 +332,11 @@ public class CoAPPackage
     * @param define
     * @param optionValue
     */
-    public CoAPPackage SetOption(CoAPOptionDefine define, Uint32 optionValue)
+    public CoAPPackage setOption(CoAPOptionDefine define, Uint32 optionValue)
     {
         UnsignedIntegerOptionValue v = new UnsignedIntegerOptionValue() { };
         v.setValue((int)optionValue.getValue());
-        return SetOption(define, v);
+        return setOption(define, v);
     }
 
     /**
@@ -345,11 +345,11 @@ public class CoAPPackage
     * @param define
     * @param optionValue
     */
-    public CoAPPackage SetOption(CoAPOptionDefine define, String optionValue)
+    public CoAPPackage setOption(CoAPOptionDefine define, String optionValue)
     {
         StringOptionValue v = new StringOptionValue() { };
         v.setValue(optionValue);
-        return SetOption(define, v);
+        return setOption(define, v);
     }
 
     /**
@@ -358,7 +358,7 @@ public class CoAPPackage
     * @param define
     * @param optionValue
     */
-    public CoAPPackage SetOption(CoAPOptionDefine define, BlockOptionValue optionValue)
+    public CoAPPackage setOption(CoAPOptionDefine define, BlockOptionValue optionValue)
     {
         if (define == CoAPOptionDefine.Block1 || define == CoAPOptionDefine.Block2)
         {
@@ -382,7 +382,7 @@ public class CoAPPackage
                 opt.setValue(v);
             }
 
-            return SetOption(define, v);
+            return setOption(define, v);
         }
         else
         {
@@ -394,9 +394,9 @@ public class CoAPPackage
      设置Block1
     * @param optionValue
      */
-    public CoAPPackage SetBlock1(BlockOptionValue optionValue)
+    public CoAPPackage setBlock1(BlockOptionValue optionValue)
     {
-        return SetOption(CoAPOptionDefine.Block1, optionValue);
+        return setOption(CoAPOptionDefine.Block1, optionValue);
     }
 
     /**
@@ -404,9 +404,9 @@ public class CoAPPackage
     *
     * @param optionValue
     */
-    public CoAPPackage SetBlock2(BlockOptionValue optionValue)
+    public CoAPPackage setBlock2(BlockOptionValue optionValue)
     {
-        return SetOption(CoAPOptionDefine.Block2, optionValue);
+        return setOption(CoAPOptionDefine.Block2, optionValue);
     }
 
     /**
@@ -414,9 +414,9 @@ public class CoAPPackage
     *
     * @param ft
     */
-    public CoAPPackage SetContentType(ContentFormat ft)
+    public CoAPPackage setContentType(ContentFormat ft)
     {
-        return SetOption(CoAPOptionDefine.ContentFormat, new Uint32(ft.getNum()));
+        return setOption(CoAPOptionDefine.ContentFormat, new Uint32(ft.getNum()));
     }
 }
 

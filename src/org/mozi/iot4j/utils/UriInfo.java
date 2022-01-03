@@ -1,8 +1,11 @@
 package org.mozi.iot4j.utils;
 
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
+import org.mozi.iot4j.CoAPProtocol;
 import org.mozi.iot4j.DNSClient;
 import sun.misc.Regexp;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -28,7 +31,7 @@ public class UriInfo
         Queries = new String[0];
     }
 
-    public static UriInfo Parse(String url) throws Exception {
+    public static UriInfo Parse(String url) {
         UriInfo uri = new UriInfo();
 
         String address = "", sPort = "", path = "";
@@ -36,7 +39,7 @@ public class UriInfo
         String[] paths;
         boolean isDomain = false;
 
-        Pattern reg = Pattern.compile("^[a-zA-Z]+://((([a-zA-Z0-9.-]+){2,})|(\\[?[a-zA-Z0-9.:]+){2,}]?)(:\\d+)?((/[a-zA-Z0-9-.%]+){0,}(\\?)?([%=a-zA-Z0-9]+(&)?){0,})$",Pattern.DOTALL);
+        Pattern reg = Pattern.compile("^[a-zA-Z]+://((([a-zA-Z0-9.-]+){2,})|(\\[?[a-zA-Z0-9.:]+){2,}]?)(:\\d+)?((/[a-zA-Z0-9-.%]+){0,}(\\?)?([%=a-zA-Z0-9]+(&)?)*)$",Pattern.DOTALL);
 
         Pattern regProto = Pattern.compile("[a-zA-Z]+(?=://)");
         Pattern regHost = Pattern.compile("(?<=://)(([a-zA-Z0-9-]+\\.?){2,}|(\\[?[a-zA-Z0-9-.:]+){2,}]?)(:\\d+)?");
@@ -53,21 +56,29 @@ public class UriInfo
             uri.Url = url;
 
             //分离协议类型
-            uri.Protocol = regProto.matcher(url).group();
-
+            Matcher mtProto=regProto.matcher(url);
+            if(mtProto.find()) {
+                uri.Protocol = mtProto.group();
+            }
             //分离域名和端口
-            address = regHost.matcher(url).group();
-
+            Matcher mtHost=regHost.matcher(url);
+            if(mtHost.find()) {
+                address = mtHost.group();
+            }
             //IPV4
-            if (regIPV4.matcher(address).find())
+            Matcher mtAddress=regIPV4.matcher(address);
+            Matcher mtDomain=regDomain.matcher(address);
+            Matcher mtIPV6=regIPV6.matcher(address);
+
+            if (mtAddress.find())
             {
-                uri.Host = regIPV4.matcher(address).group();
+                uri.Host = mtAddress.group();
                 sPort = address.replace(uri.Host, "").replace(":", "");
                 //domain
             }
-            else if (regDomain.matcher(address).find())
+            else if (mtDomain.find())
             {
-                uri.Host = regDomain.matcher(address).group();
+                uri.Host = mtDomain.group();
                 uri.Domain = uri.Host;
                 sPort = address.replace(uri.Host, "").replace(":", "");
                 isDomain = true;
@@ -75,38 +86,48 @@ public class UriInfo
             //IPV6
             else
             {
-                uri.Host = regIPV6.matcher(address).group();
+                uri.Host = mtIPV6.group();
 
                 sPort = address.replace(uri.Host, "").replace("[]:", "");
             }
 
             int port;
-            uri.Port=Integer.parseInt(sPort,10);
-
+            try {
+                uri.Port = Integer.parseInt(sPort, 10);
+            }catch(Exception ex){
+                uri.Port= CoAPProtocol.Port;
+            }
             if (isDomain)
             {
                 uri.Host = DNSClient.getDomainAddress(uri.Host);
             }
 
             //分离路径地址
-            uri.Path = regPath.matcher(url).group();
-            paths = uri.Path.split( "/" );
-
-            if (paths.length > 0)
-            {
-                uri.Paths = new String[paths.length - 1];
-                System.arraycopy(paths, 1, uri.Paths, 0, uri.Paths.length);
+            Matcher mtPath=regPath.matcher(url);
+            if(mtPath.find()) {
+                uri.Path = mtPath.group();
+                paths = uri.Path.split("/");
+                if (paths.length > 0) {
+                    uri.Paths = new String[paths.length - 1];
+                    System.arraycopy(paths, 1, uri.Paths, 0, uri.Paths.length);
+                }
             }
             //分离查询参数
-            uri.Query = regQuery.matcher(url).group();
-            if (uri.Query.length() > 0)
-            {
-                uri.Queries = uri.Query.split("&");
+            Matcher mtQuery= regQuery.matcher(url);
+            if(mtQuery.find()) {
+                uri.Query = mtQuery.group();
+                if (uri.Query.length() > 0) {
+                    uri.Queries = uri.Query.split("&");
+                }
             }
         }
         else
         {
-            throw new Exception(String.format("URL格式不正确%s",url));
+            try {
+                throw new Exception(String.format("URL格式不正确%s",url));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return uri;
     }

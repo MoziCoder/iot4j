@@ -65,7 +65,7 @@ public class CoAPOption {
             _deltaExtend = 0;
         } else if (_deltaValue .lt( 269)) {
             _delta = 13;
-            _deltaExtend = (char) (byte)(_deltaValue.minus( 13).getValue());
+            _deltaExtend = (char) (byte)(_deltaValue.minus(13).getValue());
         } else if (_deltaValue .lt(65804)) {
             _delta = 14;
             _deltaExtend = (char) (_deltaValue.minus( 269).getValue());
@@ -73,7 +73,7 @@ public class CoAPOption {
     }
 
     /**
-     * 长度总值<see cref="Length"/>+<see cref="LengthExtend"/>
+     * 长度总值@see getLength()+@see getLengthExtend()
      */
     public Uint32 getLengthValue() {
         return new Uint32 (_length + _lengthExtend);

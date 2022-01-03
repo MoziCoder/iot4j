@@ -12,7 +12,7 @@ public class StringOptionValue extends OptionValue
         try {
             return new String(_pack,"UTF-8");
         }catch (Exception ex){
-           return null;
+           return "";
         }
     }
 

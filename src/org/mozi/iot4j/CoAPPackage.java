@@ -282,6 +282,7 @@ public class CoAPPackage
         return setOption(define, new EmptyOptionValue());
     }
 
+    //TODO 此处方法有问题
     /**
     * 设置选项值，此方法可以设置自定义的选项值类型
     *

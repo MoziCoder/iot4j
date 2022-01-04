@@ -23,7 +23,7 @@ public class CoAPOption {
 
     private OptionValue _optValue;
     /**
-     * Delta总值{@_delta}+{@_deltaExtend}
+     * Delta总值{@link #_delta}+{@link #_deltaExtend}
      */
     private Uint32 _deltaValue;
 
@@ -73,7 +73,7 @@ public class CoAPOption {
     }
 
     /**
-     * 长度总值@see getLength()+@see getLengthExtend()
+     * 长度总值{@link #getLength()}+{@link #getLengthExtend()}
      */
     public Uint32 getLengthValue() {
         return new Uint32 (_length + _lengthExtend);

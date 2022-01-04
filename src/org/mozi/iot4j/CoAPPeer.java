@@ -50,9 +50,10 @@ public class CoAPPeer {
         _socket = new UDPSocket();
     }
 
-    /// <summary>
-    /// 以指定端口启动<see cref="F:Port"/>，如果不配置端口则使用默认端口
-    /// </summary>
+    /**
+     * 以指定端口启动{@link #BindPort}，如果不配置端口则使用默认端口
+     * @see #start(int port)
+     */
     public void start()
     {
         start(BindPort);

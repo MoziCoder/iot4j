@@ -2,13 +2,13 @@ package org.mozi.iot4j;
 
 /**
  * 消息类型
- * <list type="table">
- * <listheader>取值范围</listheader>
- * <item><term>0</term><see cref="Confirmable"/></item>
- * <item><term>1</term><see cref="NonConfirmable"/></item>
- * <item><term>2</term><see cref="Acknowledgement"/></item>
- * <item><term>3</term><see cref="Reset"/></item>
- * </list>
+ * <br/>
+ * <ul>
+ *      <li>0-{@CoAPMessageType.Confirmable}</li>
+ *      <li>1-{@CoAPMessageType.NonConfirmable}</li>
+ *      <li>2-{@CoAPMessageType.Acknowledgement}</li>
+ *      <li>3-{@CoAPMessageType.Reset}</li>
+ * </ul>
  *
  * @author Jason
  * @date 2021/12/29

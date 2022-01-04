@@ -158,14 +158,12 @@ public class CoAPOption {
 
     public void setValue(OptionValue optValue) {
         _optValue = optValue;
-        _lenValue = new Uint32(optValue != null ? optValue.getLength() : 0);
+        setLengthValue(new Uint32(optValue != null ? optValue.getLength() : 0));
     }
-
-    private byte[] Pack;
 
     public byte[] getPack() {
         try {
-            byte head = (byte) ((byte) (_delta << 4) | _length);
+            byte head = getOptionHead();
 
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             bos.write(head);

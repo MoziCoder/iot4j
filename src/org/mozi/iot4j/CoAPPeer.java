@@ -18,9 +18,9 @@ public class CoAPPeer {
 
     protected ArrayList<CoAPCode> SupportedRequest = new ArrayList<CoAPCode>() ;
 
-    /// <summary>
-    /// 启动时间
-    /// </summary>
+    /**
+     * 启动时间
+     */
     public Date _startTime;
 
     public int getBindPort() {

@@ -1,5 +1,6 @@
 package org.mozi.iot4j;
 
+import org.mozi.iot4j.cache.MessageCacheManager;
 import org.mozi.iot4j.utils.StringUtil;
 import org.mozi.iot4j.utils.Uint32;
 import org.mozi.iot4j.utils.UriInfo;
@@ -13,19 +14,21 @@ import org.mozi.iot4j.utils.UriInfo;
  * 服务端一般承载较大的并发压力和更复杂的业务逻辑，同时需要更强的算力。客户机则多用于信息采集，数据上报，资料下载等轻量型计算。
  * 基于上述原因，还是对从协议实现上对客户机和服务器进行角色区分。
  * CoAP基于UDP,可工作的C/S模式，多播，单播，任播（IPV6）
- *
- * <p>
+ * </p>
+ *  <p>
  * C/S模式
  * URI格式:
  *      coap://{host}:{port}/{path}[?{query}]
  * 默认端口号为5683
  *      coaps://{host}:{port}/{path}[?{query}]
  * 默认端口号为5684
- * <p>
+ *  </p>
+ *  <p>
  * 多播模式:
  *      IPV4:224.0.1.187
  *      IPV6:FF0X::FD
- * <p>
+ *  </p>
+ *  <p>
  *  消息重传
  *  When SendTimeOut between {ACK_TIMEOUT} and (ACK_TIMEOUT * ACK_RANDOM_FACTOR)  then
  *      TryCount=0
@@ -34,7 +37,7 @@ import org.mozi.iot4j.utils.UriInfo;
  *      SendTime*=2
  *  When TryCount >{MAX_RETRANSMIT} then
  *      Send(Rest)
- *  <p>
+ *  </p>
  */
 
 //TODO 即时响应ACK，延迟响应CON,消息可即时响应也可处理完成后响应，延迟消息需要后端缓存支撑
@@ -50,7 +53,7 @@ public class CoAPClient extends CoAPPeer {
 
     private CoAPTransmissionConfig _transConfig = new CoAPTransmissionConfig();
 
-    //private MessageCacheManager _cacheManager;
+    private MessageCacheManager _cacheManager;
 
     //private char _remotePort = CoAPProtocol.Port;
     //private string _remotehost = "";
@@ -66,12 +69,12 @@ public class CoAPClient extends CoAPPeer {
     //public char RemotePort { get { return _remotePort; } protected set { _remotePort = value; } }
 
     public CoAPClient() {
-        //_cacheManager = new MessageCacheManager(this);
+        _cacheManager = new MessageCacheManager(this);
         //配置本地服务口地址
     }
 
     /**
-     * 设置本地端口，默认为{@CoAPProtocol.Port},如果不设置则使用随机端口
+     * 设置本地端口，默认为{@CoAPProtocol.Port}
      *
      * @param port
      * @returns
@@ -143,10 +146,10 @@ public class CoAPClient extends CoAPPeer {
      * @returns MessageId
      */
     public char sendMessage(String host, int port, CoAPPackage pack) {
-//        if (pack.getMesssageId() == 0)
-//        {
-//            pack.MesssageId = _cacheManager.GenerateMessageId();
-//        }
+        if (pack.getMesssageId() == 0)
+        {
+            pack.setMesssageId(_cacheManager.GenerateMessageId());
+        }
         _socket.sendTo(pack.pack(), host, port);
         return pack.getMesssageId();
     }
@@ -179,12 +182,13 @@ public class CoAPClient extends CoAPPeer {
     /**
      * Get提交 填入指定格式的URI，如果是域名，程序会调用DNS进行解析
      *
-     * @param url     <list type="table">
-     *                <listheader>URI格式:{host}-IPV4地址,IPV6地址,Domain域名;{path}-路径,请使用REST样式路径;{query}为查询参数字符串</listheader>
-     *                <item><term>格式1：</term>coap://{host}[:{port}]/{path}</item>
-     *                <item><term>格式2：</term>coap://{host}[:{port}]/{path}[?{query}]</item>
-     *                <item><term>格式3：</term>coap://{host}[:{port}]/{path1}[/{path2}]...[/{pathN}][?{query}]</item>
-     *                </list>
+     * @param url
+     *      <list type="table">
+     *            <listheader>URI格式:{host}-IPV4地址,IPV6地址,Domain域名;{path}-路径,请使用REST样式路径;{query}为查询参数字符串</listheader>
+     *            <item><term>格式1：</term>coap://{host}[:{port}]/{path}</item>
+     *            <item><term>格式2：</term>coap://{host}[:{port}]/{path}[?{query}]</item>
+     *            <item><term>格式3：</term>coap://{host}[:{port}]/{path1}[/{path2}]...[/{pathN}][?{query}]</item>
+     *      </list>
      * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
      * @returns MessageId
      */
@@ -194,8 +198,8 @@ public class CoAPClient extends CoAPPeer {
         cp.setCode(CoAPRequestMethod.Get);
         //TODO Token要实现一个生成器
         cp.setToken(new byte[]{0x01, 0x02, 0x03, 0x04});
-        //TODO MessageId的生成配合拥塞控制算法，此处指定为固定值
-        cp.setMesssageId((char) 123456);
+        //DONE MessageId的生成配合拥塞控制算法，此处指定为固定值
+        cp.setMesssageId(_cacheManager.GenerateMessageId());
         cp.setMessageType(msgType == null ? CoAPMessageType.Confirmable : msgType);
         UriInfo uri = UriInfo.Parse(url);
 
@@ -237,8 +241,8 @@ public class CoAPClient extends CoAPPeer {
         cp.setCode(CoAPRequestMethod.Post);
         //TODO Token要实现一个生成器
         cp.setToken(new byte[]{0x01, 0x02, 0x03, 0x04});
-        //TODO MessageId的生成配合拥塞控制算法，此处指定为固定值
-        cp.setMesssageId((char) 123456);
+        //DONE MessageId的生成配合拥塞控制算法，此处指定为固定值
+        cp.setMesssageId(_cacheManager.GenerateMessageId());
         cp.setMessageType(msgType == null ? CoAPMessageType.Confirmable : msgType);
         UriInfo uri = UriInfo.Parse(url);
 

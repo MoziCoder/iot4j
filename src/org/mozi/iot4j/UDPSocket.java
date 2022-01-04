@@ -1,7 +1,9 @@
 package org.mozi.iot4j;
 
+import javax.security.auth.callback.Callback;
 import java.io.IOException;
 import java.net.*;
+import java.util.Date;
 
 /**
  * Udp通讯组件
@@ -26,21 +28,37 @@ public class UDPSocket {
 
         _port=port;
         try {
-            _sc= new DatagramSocket(_port);
-            _sc.setReuseAddress(true);
-            _sc.setSoTimeout(32);
-            SocketAddress sa=new SocketAddress() {
-                @Override
-                public int hashCode() {
-                    return super.hashCode();
-                }
-            };
-
+            if(_sc==null) {
+                _sc = new DatagramSocket(_port);
+                _sc.setReuseAddress(true);
+                _sc.setSoTimeout(32);
+//            SocketAddress sa=new SocketAddress() {
+//                @Override
+//                public int hashCode() {
+//                    return super.hashCode();
+//                }
+//            };
+            }
         }catch (Exception ex){
             ex.printStackTrace();
         }
     }
-
+    public void observeMessageReceive(Callback cb){
+        Thread thread=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (_sc!=null){
+                    byte[] buffer=new byte[1024];
+                    DatagramPacket dp=new DatagramPacket(buffer,buffer.length);
+                    try {
+                        _sc.receive(dp);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
     public void sendTo(byte[] data,String host,int port){
         DatagramPacket dp=new DatagramPacket(data,data.length,new InetSocketAddress(host,port));
         try {
@@ -51,6 +69,8 @@ public class UDPSocket {
     }
 
     public void shutdown() {
-
+        if(!_sc.isClosed()){
+            _sc.close();
+        }
     }
 }

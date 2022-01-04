@@ -7,6 +7,7 @@ public class Main{
      */
     public static void main(String[] args){
         CoAPClient client=new CoAPClient();
+        client.start(12345);
         try {
             client.get("coap://100.100.0.105/sensor/getinfo");
         }catch (Exception ex){

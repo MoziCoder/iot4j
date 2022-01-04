@@ -8,9 +8,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 
-@Target(ElementType.PARAMETER)
-@interface BlockDefineCategory{};
-
 /**
  * @author Jason
  * @date 2021/12/29
@@ -30,7 +27,7 @@ public class CoAPPackage
     * 选项 类似HTTP头属性
     */
     public ArrayList<CoAPOption> Options = new ArrayList<CoAPOption>();
-    private byte _version = 1,_tokenLength;
+    private byte _version = 1;
     private CoAPMessageType _msgType;
     private CoAPCode _code;
     private char _msgId;
@@ -249,7 +246,7 @@ public class CoAPPackage
             byte head = 0b00000000;
             head = (byte) (head | (_version << 6));
             head = (byte) (head | (_msgType.getValue() << 4));
-            head = (byte) (head | _tokenLength);
+            head = (byte) (head | getTokenLength());
 
             bos.write(head);
             bos.write((byte) (((byte) _code.getCategory() << 5) | ((byte) (_code.getDetail() << 3) >> 3)));
@@ -258,9 +255,11 @@ public class CoAPPackage
             Uint32 delta = new Uint32(0);
 
             for (CoAPOption op : Options) {
+
                 op.setDeltaValue(new Uint32((long)op.getOption().getOptionNumber() - delta.getValue()));
                 bos.write(op.getPack());
                 delta.plus(op.getDeltaValue());
+
             }
             if (_payload != null) {
                 bos.write(CoAPProtocol.HeaderEnd);
@@ -318,12 +317,9 @@ public class CoAPPackage
     */
     public CoAPPackage setOption(CoAPOptionDefine define, byte[] optionValue)
     {
-        CoAPOption option = new CoAPOption();
-        option.setOption(define);
         ArrayByteOptionValue ao=new ArrayByteOptionValue() { };
         ao.setValue(optionValue);
-        option.setValue(ao);
-        Options.add(option);
+        setOption(define,ao);
         return this;
     }
 

@@ -36,7 +36,7 @@ public class ByteStreamUtil {
     }
 
     public static byte[] charToBytes(char data){
-        byte[] targets = new byte[4];
+        byte[] targets = new byte[2];
         targets[1] = (byte) (data & 0xff);// 最低位
         targets[0] = (byte) ((data >>> 8) & 0xff);// 次低位
         return targets;

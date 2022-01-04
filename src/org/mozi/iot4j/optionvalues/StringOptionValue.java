@@ -21,7 +21,7 @@ public class StringOptionValue extends OptionValue
         try {
             _pack = ((String) value).getBytes("UTF-8");
         }catch (Exception ex){
-
+            System.out.println(ex.getMessage());
         }
     }
 

@@ -1,10 +1,7 @@
 package org.mozi.iot4j.utils;
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
 import org.mozi.iot4j.CoAPProtocol;
 import org.mozi.iot4j.DNSClient;
-import sun.misc.Regexp;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,6 +28,11 @@ public class UriInfo
         Queries = new String[0];
     }
 
+    /**
+     * 分解请求地址
+     * @param url
+     * @return
+     */
     public static UriInfo Parse(String url) {
         UriInfo uri = new UriInfo();
 

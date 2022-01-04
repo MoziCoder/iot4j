@@ -1,5 +1,6 @@
 package org.mozi.iot4j;
 
+import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -10,7 +11,7 @@ import java.util.TimeZone;
  * @author Jason
  * @date 2021/12/19
  */
-public class CoAPPeer {
+public class CoAPPeer implements PackageReceiveEvent{
 
     protected  UDPSocket _socket;
 
@@ -66,6 +67,7 @@ public class CoAPPeer {
     {
         BindPort = port;
         _socket.start(BindPort);
+        _socket.setOnPackageReceiveListener(this);
         _startTime = Calendar.getInstance(TimeZone.getDefault()).getTime();
     }
     /// <summary>
@@ -75,7 +77,9 @@ public class CoAPPeer {
     {
         _socket.shutdown();
         _startTime = null;
+        _socket.setOnPackageReceiveListener(null);
     }
+
 //    /// <summary>
 //    /// 数据接收完成回调
 //    /// </summary>
@@ -137,5 +141,11 @@ public class CoAPPeer {
     protected boolean isSupportedRequest(CoAPPackage pack)
     {
         return SupportedRequest.contains(pack.getCode());
+    }
+
+    @Override
+    public void onPackageReceived(DatagramPacket dp) {
+        CoAPPackage cp=CoAPPackage.parse(dp.getData(),false);
+        System.out.println(cp.getCode().getDescription());
     }
 }

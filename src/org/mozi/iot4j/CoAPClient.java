@@ -84,6 +84,7 @@ public class CoAPClient extends CoAPPeer {
         _randomPort = false;
         return this;
     }
+
 //    /// <summary>
 //    /// 数据接收完成回调
 //    /// </summary>

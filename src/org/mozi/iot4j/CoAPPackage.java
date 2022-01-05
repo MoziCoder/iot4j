@@ -4,8 +4,6 @@ import org.mozi.iot4j.optionvalues.*;
 import org.mozi.iot4j.utils.ByteStreamUtil;
 import org.mozi.iot4j.utils.Uint32;
 import java.io.ByteArrayOutputStream;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
 import java.util.ArrayList;
 
 /**
@@ -26,7 +24,7 @@ public class CoAPPackage
     /**
     * 选项 类似HTTP头属性
     */
-    public ArrayList<CoAPOption> Options = new ArrayList<CoAPOption>();
+    private ArrayList<CoAPOption> _options = new ArrayList<CoAPOption>();
     private byte _version = 1;
     private CoAPMessageType _msgType;
     private CoAPCode _code;
@@ -36,18 +34,19 @@ public class CoAPPackage
     //TODO Java byte 取值范围等同于C中的char,故此处要进行转换
     /**
     * 解析数据包
-    * @param data
-    * @param isRequest
+    * @param data 数据包
+    * @param packType 是否请求
     */
-    public static CoAPPackage parse(byte[] data, boolean isRequest)
+    public static CoAPPackage parse(byte[] data, CoAPPackageType packType)
     {
         CoAPPackage pack = new CoAPPackage();
         byte head = data[0];
         pack.setVersion((byte)(head >> 6));
-        pack.setMessageType((CoAPMessageType)AbsClassEnum.get(String.valueOf((byte)(head << 2) >> 6),CoAPMessageType.class));
+        //TODO Java只有有符号的数值类型，此处的方法是直接对高位进行&运算
+        pack.setMessageType((CoAPMessageType)AbsClassEnum.get(String.valueOf(((byte)(head<<2)&0xC0)>>6),CoAPMessageType.class));
         pack.setTokenLength((byte)((byte)(head << 4) >> 4));
 
-        pack.setCode(isRequest ? (CoAPCode)AbsClassEnum.get(String.valueOf(data[1]),CoAPRequestMethod.class) : (CoAPCode)AbsClassEnum.get(String.valueOf(data[1]),CoAPResponseCode.class));
+        pack.setCode(packType==CoAPPackageType.Request ? (CoAPCode)AbsClassEnum.get(String.valueOf(data[1]),CoAPRequestMethod.class) : (CoAPCode)AbsClassEnum.get(String.valueOf(data[1]),CoAPResponseCode.class));
 
         byte[] arrMsgId = new byte[2], arrToken = new byte[pack.getTokenLength()];
         System.arraycopy(data, 2, arrMsgId, 0, 2);
@@ -112,7 +111,7 @@ public class CoAPPackage
 
             option.getValue().setValue(new byte[(int) option.getLengthValue().getValue()]);
             System.arraycopy(data, bodySplitterPos + 1 + lenDeltaExt + lenLengthExt, option.getValue().getPack(), 0, option.getValue().getLength());
-            pack.Options.add(option);
+            pack._options.add(option);
             deltaSum=new Uint32(option.getDelta());
             //头长度+delta扩展长度+len
             bodySplitterPos += 1 + lenDeltaExt + lenLengthExt + option.getValue().getLength();
@@ -128,39 +127,32 @@ public class CoAPPackage
         return pack;
 
     }
-
     /**
     * 版本 2bits
     */
     public byte getVersion() {
         return _version;
     }
-
     public void setVersion(byte version) {
         _version=version;
     }
-
     /**
     * 消息类型 2bits
     */
     public CoAPMessageType getMessageType() {
         return _msgType;
     }
-
     public void setMessageType(CoAPMessageType messageType) {
         _msgType=messageType;
     }
-
     /**
     * Token长度 4bits
     * 0-8bytes取值范围
     * 9-15为保留使用，收到此消息时直接消息报错
     */
-
     public byte getTokenLength() {
         return (byte)(_token == null ? 0 : _token.length);
     }
-
     public void setTokenLength(byte tokenLength) {
         if (tokenLength == 0)
         {
@@ -171,29 +163,24 @@ public class CoAPPackage
             _token = new byte[tokenLength];
         }
     }
-
     /**
     * 8bits Lengths 9-15 reserved
     */
     public CoAPCode getCode() {
         return _code;
     }
-
     public void setCode(CoAPCode code) {
         _code=code;
     }
-
     /**
     * 用于消息确认防重，消息确认-重置 16bits
     */
     public char getMesssageId() {
         return _msgId;
     }
-
     public void setMesssageId(char messsageId) {
         _msgId =messsageId;
     }
-
     /**
     * 凭据
     *  0-8bytes 典型应用场景需>=4bytes。本地和远程终结点不变的情况下可以使用同一Token,一般建议每请求重新生成Token
@@ -201,19 +188,15 @@ public class CoAPPackage
     public byte[] getToken() {
         return _token;
     }
-
     public void setToken(byte[] token) {
         _token=token;
     }
-
     /**
     * 包体
     */
     public byte[] getPayload() {
         return _payload;
     }
-
-
     // 链接地址
     //
     //public string Url
@@ -221,11 +204,9 @@ public class CoAPPackage
     //    get;
     //    set;
     //}
-
     public void setPayload(byte[] payload) {
         _payload=payload;
     }
-
     /**
     * 转为HTTP包,ASCII字符串数据包
     *
@@ -254,7 +235,7 @@ public class CoAPPackage
             bos.write(_token);
             Uint32 delta = new Uint32(0);
 
-            for (CoAPOption op : Options) {
+            for (CoAPOption op : _options) {
 
                 op.setDeltaValue(new Uint32((long)op.getOption().getOptionNumber() - delta.getValue()));
                 bos.write(op.getPack());
@@ -273,7 +254,6 @@ public class CoAPPackage
 
     /**
     * 设置空选项值
-    *
     * @param define
     */
     public CoAPPackage setOption(CoAPOptionDefine define)
@@ -281,10 +261,9 @@ public class CoAPPackage
         return setOption(define, new EmptyOptionValue());
     }
 
-    //TODO 此处方法有问题
+    //DONE 此处方法有问题
     /**
     * 设置选项值，此方法可以设置自定义的选项值类型
-    *
     * @param define
     * @param optionValue
     */
@@ -295,23 +274,21 @@ public class CoAPPackage
         option.setValue(optionValue);
         int optGreater=0;
 
-        for (CoAPOption op: Options) {
+        for (CoAPOption op: _options) {
             if(op.getOption().getOptionNumber()>(define.getOptionNumber())){
-                optGreater=Options.indexOf(op);
+                optGreater= _options.indexOf(op);
             }
             //var optGreater = Options.FindIndex(x => x.DeltaValue > option.DeltaValue);
         }
         if (optGreater < 0)
         {
-            optGreater = Options.size();
+            optGreater = _options.size();
         }
-        Options.add(optGreater, option);
+        _options.add(optGreater, option);
         return this;
     }
-
     /**
     * 设置字节流选项值
-    *
     * @param define
     * @param optionValue
     */
@@ -322,10 +299,8 @@ public class CoAPPackage
         setOption(define,ao);
         return this;
     }
-
     /**
     * 设置uint(32)选项值
-    *
     * @param define
     * @param optionValue
     */
@@ -335,10 +310,8 @@ public class CoAPPackage
         v.setValue((int)optionValue.getValue());
         return setOption(define, v);
     }
-
     /**
     * 设置字符串选项值
-    *
     * @param define
     * @param optionValue
     */
@@ -348,10 +321,8 @@ public class CoAPPackage
         v.setValue(optionValue);
         return setOption(define, v);
     }
-
     /**
     * 设置Block1|Block2选项值，此处会作去重处理。设置非Block1|Block2会被忽略掉
-    *
     * @param define
     * @param optionValue
     */
@@ -360,7 +331,7 @@ public class CoAPPackage
         if (define == CoAPOptionDefine.Block1 || define == CoAPOptionDefine.Block2)
         {
             CoAPOption opt = null;
-            for (CoAPOption op:Options){
+            for (CoAPOption op: _options){
                 if(op.getOption()==define){
                     opt=op;
                 }
@@ -386,7 +357,6 @@ public class CoAPPackage
             return this;
         }
     }
-
     /**
      设置Block1
     * @param optionValue
@@ -395,7 +365,6 @@ public class CoAPPackage
     {
         return setOption(CoAPOptionDefine.Block1, optionValue);
     }
-
     /**
     * 设置Block2
     *
@@ -405,7 +374,6 @@ public class CoAPPackage
     {
         return setOption(CoAPOptionDefine.Block2, optionValue);
     }
-
     /**
     * 设置内容格式类型Content-Format,Http中的Content-Type
     *
@@ -414,6 +382,54 @@ public class CoAPPackage
     public CoAPPackage setContentType(ContentFormat ft)
     {
         return setOption(CoAPOptionDefine.ContentFormat, new Uint32(ft.getNum()));
+    }
+
+    /**
+     * 获取域名信息，{@CoAPOptionDefine.UriHost}
+     * @return
+     */
+    public String getDomain(){
+        String domain = "";
+        for (CoAPOption op: _options)
+        {
+            if (op.getOption() == CoAPOptionDefine.UriHost)
+            {
+                domain = (String)(op.getValue().getValue());
+            }
+        }
+        return domain;
+    }
+
+    /**
+     * 获取路径信息，{@CoAPOptionDefine.UriPath}
+     * @return
+     */
+    public String getPath(){
+        StringBuilder path = new StringBuilder();
+        for(CoAPOption op: _options)
+        {
+            if (op.getOption() == CoAPOptionDefine.UriPath)
+            {
+                path.append("/").append((String) op.getValue().getValue());
+            }
+        }
+        return path.toString();
+    }
+
+    /**
+     * 获取查询字符串，{@CoAPOptionDefine.UriQuery}
+     * @return
+     */
+    public String getQuery(){
+        ArrayList<String> query = new ArrayList<String>();
+        for (CoAPOption op: _options)
+        {
+            if (op.getOption() == CoAPOptionDefine.UriQuery)
+            {
+                query.add((String)(op.getValue().getValue()));
+            }
+        }
+        return String.join("&",query);
     }
 }
 

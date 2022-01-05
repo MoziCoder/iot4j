@@ -27,7 +27,7 @@ public abstract class AbsClassEnum
                 //TODO 此处能否得到预期结果
 
                 Object obj=info.get(null);
-                if(null!=obj&&(obj.getClass().isInstance( cls.getClass()))){
+                if((cls.isInstance(obj))){
                       if(((AbsClassEnum)obj).getTag().equals(tag)){
                           rv=(AbsClassEnum)obj;
                           return rv;

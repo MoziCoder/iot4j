@@ -143,9 +143,13 @@ public class CoAPPeer implements PackageReceiveEvent{
         return SupportedRequest.contains(pack.getCode());
     }
 
+    /**
+     * 接收数据回调
+     * @param dp
+     */
     @Override
     public void onPackageReceived(DatagramPacket dp) {
-        CoAPPackage cp=CoAPPackage.parse(dp.getData(),false);
+        CoAPPackage cp=CoAPPackage.parse(dp.getData(),CoAPPackageType.Request);
         System.out.println(cp.getCode().getDescription());
     }
 }

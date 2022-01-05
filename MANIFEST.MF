@@ -1,0 +1,6 @@
+Manifest-Version: 1.3.4
+Main-Class: Main
+Created-By: Jason
+Specification-Title: mozi.iot4j
+Specification-Vendor: MoziCoder workgroup
+Bundle-Copyright: Copyright © Jason 2021-2022

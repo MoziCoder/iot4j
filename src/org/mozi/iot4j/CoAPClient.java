@@ -5,6 +5,8 @@ import org.mozi.iot4j.utils.StringUtil;
 import org.mozi.iot4j.utils.Uint32;
 import org.mozi.iot4j.utils.UriInfo;
 
+import java.net.DatagramPacket;
+
 /**
  * CoAP对等端
  * @author Jason
@@ -274,5 +276,15 @@ public class CoAPClient extends CoAPPeer {
     //TODO 是否会出现安全问题
     private void delete(String url) {
 
+    }
+
+    /**
+     * 接收数据回调
+     * @param dp
+     */
+    @Override
+    public void onPackageReceived(DatagramPacket dp) {
+        CoAPPackage cp=CoAPPackage.parse(dp.getData(),CoAPPackageType.Response);
+        System.out.println(cp.getCode().getDescription());
     }
 }

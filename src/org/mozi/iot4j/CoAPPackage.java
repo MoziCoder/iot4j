@@ -30,6 +30,7 @@ public class CoAPPackage
     private CoAPCode _code;
     private char _msgId;
     private byte[] _token,_payload;
+    private CoAPPackageType _packType=CoAPPackageType.Request;
 
     //TODO Java byte 取值范围等同于C中的char,故此处要进行转换
     /**
@@ -47,7 +48,7 @@ public class CoAPPackage
         pack.setTokenLength((byte)((byte)(head << 4) >> 4));
 
         pack.setCode(packType==CoAPPackageType.Request ? (CoAPCode)AbsClassEnum.get(String.valueOf(data[1]),CoAPRequestMethod.class) : (CoAPCode)AbsClassEnum.get(String.valueOf(data[1]),CoAPResponseCode.class));
-
+        pack.setPackageType(packType);
         byte[] arrMsgId = new byte[2], arrToken = new byte[pack.getTokenLength()];
         System.arraycopy(data, 2, arrMsgId, 0, 2);
         System.arraycopy(data, 2 + 2, arrToken, 0, arrToken.length);
@@ -126,6 +127,22 @@ public class CoAPPackage
         }
         return pack;
 
+    }
+
+    /**
+     * 设置包类型
+     * @param packType
+     */
+    private void setPackageType(CoAPPackageType packType) {
+        _packType=packType;
+    }
+
+    /**
+     * 获取包类型 {@CoAPPackageType.Request}|{@CoAPPackageType.Response}
+     * @return
+     */
+    public  CoAPPackageType getPackageType(){
+        return _packType;
     }
     /**
     * 版本 2bits

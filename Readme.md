@@ -2,7 +2,7 @@
 
 iot4j是Java版的IoT物联网客户端标准通讯组件包，即IoT客户端包。该项目是Mozi.IoT.Client的Java客户端实现，项目功能与Mozi.IoT保持同步。由于作者的技术偏好为.Net向，故而会优先开发.Net版本，然后再开发Java版,Java的版本更迭相对会出现一点滞后。
 
-## Mozi.IoT物联网
+## [Mozi.IoT][mozinetwork]物联网项目介绍
 
 Mozi.IoT是一个物联网标准通讯组件(CoAP协议)，包含网关服务器和客户端。该项目并不是一个应用框架,而是CoAP的标准通协议实现，项目目前是Mozi.Network的子项目，有可能发展成为一个独立的项目。精力有限，当前仅实现和充实CoAP相关功能。
 
@@ -57,9 +57,14 @@ public class Main{
 
         CoAPClient client=new CoAPClient();
         client.start(12345);
-
+        client.setResponseListener(new ResponseEvent() {
+            @Override
+            public void onResponse(CoAPPackage cp) {
+                //这里处理包的数据，加入业务逻辑
+            }
+        });
         try {
-            client.get("coap://127.0.0.1/sensor/getinfo");
+            client.get("coap://100.100.0.105/sensor/getinfo");
         }catch (Exception ex){
             System.out.println(ex.getMessage());
         }
@@ -72,3 +77,4 @@ public class Main{
 
 [1]:mailto:brotherqian@163.com
 [iot4j]:https://gitee.com/myui/mozi.iot4j
+[mozinetwork]:https://gitee.com/myui_admin/mozi

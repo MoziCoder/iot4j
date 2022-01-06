@@ -10,11 +10,9 @@ import java.lang.reflect.Field;
 public abstract class AbsClassEnum
 {
     protected abstract String getTag();
-    /// <summary>
-    /// 获取方法 不区分标识符大小写
-    /// </summary>
-    /// <param name="name"></param>
-    /// <returns></returns>
+    /*
+     * 获取方法 不区分标识符大小写
+    */
     public static AbsClassEnum get(String tag, Class cls)
     {
         //T t = Activator.CreateInstance<T>();

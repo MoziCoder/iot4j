@@ -1,4 +1,6 @@
 import org.mozi.iot4j.CoAPClient;
+import org.mozi.iot4j.CoAPPackage;
+import org.mozi.iot4j.event.ResponseEvent;
 
 public class Main{
     /**
@@ -8,6 +10,12 @@ public class Main{
     public static void main(String[] args){
         CoAPClient client=new CoAPClient();
         client.start(12345);
+        client.setResponseListener(new ResponseEvent() {
+            @Override
+            public void onResponse(CoAPPackage cp) {
+                //这里处理包的数据，加入业务逻辑
+            }
+        });
         try {
             client.get("coap://100.100.0.105/sensor/getinfo");
         }catch (Exception ex){

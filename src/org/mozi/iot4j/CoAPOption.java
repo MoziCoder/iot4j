@@ -9,7 +9,6 @@ import java.io.ByteArrayOutputStream;
 
 /**
  * CoAP头属性
- *
  * @author Jason
  * @date 2021/12/29
  */

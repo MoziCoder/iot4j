@@ -1,6 +1,7 @@
 package org.mozi.iot4j;
 
 import org.mozi.iot4j.cache.MessageCacheManager;
+import org.mozi.iot4j.event.ResponseEvent;
 import org.mozi.iot4j.utils.StringUtil;
 import org.mozi.iot4j.utils.Uint32;
 import org.mozi.iot4j.utils.UriInfo;
@@ -12,18 +13,18 @@ import java.net.DatagramPacket;
  * @author Jason
  * @date 2021-12-19
  * <p>
- * UDP使用对等模式工作，客户机和服务器地位对等，且CoAP协议定义的客户机和服务器也是对等关系，角色可以随时互换。
- * 服务端一般承载较大的并发压力和更复杂的业务逻辑，同时需要更强的算力。客户机则多用于信息采集，数据上报，资料下载等轻量型计算。
- * 基于上述原因，还是对从协议实现上对客户机和服务器进行角色区分。
- * CoAP基于UDP,可工作的C/S模式，多播，单播，任播（IPV6）
+ *      UDP使用对等模式工作，客户机和服务器地位对等，且CoAP协议定义的客户机和服务器也是对等关系，角色可以随时互换。
+ *      服务端一般承载较大的并发压力和更复杂的业务逻辑，同时需要更强的算力。客户机则多用于信息采集，数据上报，资料下载等轻量型计算。
+ *      基于上述原因，还是对从协议实现上对客户机和服务器进行角色区分。
+ *      CoAP基于UDP,可工作的C/S模式，多播，单播，任播（IPV6）
  * </p>
  *  <p>
  * C/S模式
- * URI格式:
- *      coap://{host}:{port}/{path}[?{query}]
- * 默认端口号为5683
- *      coaps://{host}:{port}/{path}[?{query}]
- * 默认端口号为5684
+ *      URI格式:
+ *           coap://{host}:{port}/{path}[?{query}]
+ *      默认端口号为5683
+ *           coaps://{host}:{port}/{path}[?{query}]
+ *      默认端口号为5684
  *  </p>
  *  <p>
  * 多播模式:
@@ -57,6 +58,8 @@ public class CoAPClient extends CoAPPeer {
 
     private MessageCacheManager _cacheManager;
 
+    private ResponseEvent _responseEvent;
+
     //private char _remotePort = CoAPProtocol.Port;
     //private string _remotehost = "";
 
@@ -86,66 +89,21 @@ public class CoAPClient extends CoAPPeer {
         _randomPort = false;
         return this;
     }
-
-//    /// <summary>
-//    /// 数据接收完成回调
-//    /// </summary>
-//    /// <param name="sender"></param>
-//    /// <param name="args"></param>
-//    protected override void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
-//    {
-//        CoAPPackage pack2 = null;
-//
-//        //try
-//        //{
-//        CoAPPackage pack = CoAPPackage.Parse(args.Data, false);
-//
-//        //pack2 = new CoAPPackage()
-//        //{
-//        //    Version = 1,
-//        //    MessageType = CoAPMessageType.Acknowledgement,
-//        //    Token = pack.Token,
-//        //    MesssageId = pack.MesssageId,
-//        //};
-//
-//        ////判断是否受支持的方法
-//        //if (IsSupportedRequest(pack))
-//        //{
-//        //    if (pack.MessageType == CoAPMessageType.Confirmable || pack.MessageType == CoAPMessageType.Acknowledgement)
-//        //    {
-//        //        pack2.Code = CoAPResponseCode.Content;
-//        //    }
-//        //}
-//        //else
-//        //{
-//        //    pack2.Code = CoAPResponseCode.MethodNotAllowed;
-//        //}
-//
-//        ////检查分块
-//
-//        ////检查内容类型
-//
-//        ////}
-//        ////catch (Exception ex)
-//        ////{
-//        ////    Console.WriteLine(ex.Message);
-//        ////}
-//        ////finally
-//        ////{
-//        //if (pack2 != null)
-//        //{
-//        //    _socket.SendTo(pack2.Pack(), args.IP, args.Port);
-//        //}
-//        ////}
-//    }
+    /**
+     * 设置Response回调事件
+     * @param event
+     */
+    public void setResponseListener(ResponseEvent event){
+        _responseEvent=event;
+    }
 
     /**
      * 发送请求消息,此方法为高级方法。
      * 如果对协议不够了解，请不要调用。
      * DOMAIN地址请先转换为IP地址，然后填充到 “Uri-Host”选项中
-     * @param host 服务器地址IPV4/IPV6
-     * @param port 服务器端口
-     * @param pack 数据报文
+     *  @param host 服务器地址IPV4/IPV6
+     *  @param port 服务器端口
+     *  @param pack 数据报文
      * @returns MessageId
      */
     public char sendMessage(String host, int port, CoAPPackage pack) {
@@ -159,7 +117,6 @@ public class CoAPClient extends CoAPPeer {
 
     /**
      * 注入URL相关参数,domain,port,paths,queries
-     *
      * @param uri
      * @param cp
      */
@@ -286,5 +243,8 @@ public class CoAPClient extends CoAPPeer {
     public void onPackageReceived(DatagramPacket dp) {
         CoAPPackage cp=CoAPPackage.parse(dp.getData(),CoAPPackageType.Response);
         System.out.println(cp.getCode().getDescription());
+        if(_responseEvent!=null){
+            _responseEvent.onResponse(cp);
+        }
     }
 }

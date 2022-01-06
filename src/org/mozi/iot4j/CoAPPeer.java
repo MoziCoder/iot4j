@@ -1,5 +1,8 @@
 package org.mozi.iot4j;
 
+import org.mozi.iot4j.event.PackageReceiveEvent;
+import org.mozi.iot4j.event.ResponseEvent;
+
 import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -11,13 +14,15 @@ import java.util.TimeZone;
  * @author Jason
  * @date 2021/12/19
  */
-public class CoAPPeer implements PackageReceiveEvent{
+public class CoAPPeer implements PackageReceiveEvent {
 
     protected  UDPSocket _socket;
 
     protected int BindPort = CoAPProtocol.Port;
 
     protected ArrayList<CoAPCode> SupportedRequest = new ArrayList<CoAPCode>() ;
+
+    private PackageReceiveEvent _packReceiveEvent;
 
     /**
      * 启动时间
@@ -59,10 +64,10 @@ public class CoAPPeer implements PackageReceiveEvent{
     {
         start(BindPort);
     }
-    /// <summary>
-    /// 启动本端服务
-    /// </summary>
-    /// <param name="port"></param>
+    /**
+     *  启动本端服务
+     *  @param port 本地端口
+     */
     public void start(int port)
     {
         BindPort = port;
@@ -70,14 +75,26 @@ public class CoAPPeer implements PackageReceiveEvent{
         _socket.setOnPackageReceiveListener(this);
         _startTime = Calendar.getInstance(TimeZone.getDefault()).getTime();
     }
-    /// <summary>
-    /// 端口下线
-    /// </summary>
+    /**
+    * 端口下线
+    */
     public void shutdown()
     {
         _socket.shutdown();
         _startTime = null;
         _socket.setOnPackageReceiveListener(null);
+    }
+
+    //TODO 此处会接管所有的数据包处理，故而将方法改为私有
+    /**
+     * 设置包接收侦听器
+     * @param receiveEvent
+     */
+    private void setOnPackageReceiveListener(PackageReceiveEvent receiveEvent){
+        if(receiveEvent!=null){
+            _packReceiveEvent=receiveEvent;
+            _socket.setOnPackageReceiveListener(_packReceiveEvent);
+        }
     }
 
 //    /// <summary>
@@ -133,11 +150,11 @@ public class CoAPPeer implements PackageReceiveEvent{
 //
 //    }
 
-    /// <summary>
-    /// 是否受支持的请求方法<see cref="CoAPRequestMethod"/>
-    /// </summary>
-    /// <param name="pack"></param>
-    /// <returns></returns>
+    /**
+     * 是否受支持的请求方法
+     * @param pack
+     * @see CoAPRequestMethod
+     */
     protected boolean isSupportedRequest(CoAPPackage pack)
     {
         return SupportedRequest.contains(pack.getCode());

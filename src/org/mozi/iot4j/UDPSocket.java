@@ -1,6 +1,6 @@
 package org.mozi.iot4j;
 
-import javafx.util.Callback;
+import org.mozi.iot4j.event.PackageReceiveEvent;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -25,10 +25,18 @@ public class UDPSocket implements Thread.UncaughtExceptionHandler {
 
     }
 
+    /**
+     * 设置本地绑定端口
+     * @param port
+     */
     public void setPort(int port){
         _port=port;
     }
 
+    /**
+     * 启动 实例化 DatagramSocket
+     * @param port
+     */
     public void start(int port){
 
         _port=port;
@@ -50,9 +58,18 @@ public class UDPSocket implements Thread.UncaughtExceptionHandler {
             ex.printStackTrace();
         }
     }
+
+    /**
+     * 包接收回调事件
+     * @param receiveEvent
+     */
     public void setOnPackageReceiveListener(PackageReceiveEvent receiveEvent){
         _receiveEvent=receiveEvent;
     }
+
+    /**
+     * 线程侦听数据接收
+     */
     public void observeMessageReceive(){
         thread = new Thread(new Runnable() {
             @Override
@@ -80,6 +97,12 @@ public class UDPSocket implements Thread.UncaughtExceptionHandler {
         thread.start();
     }
 
+    /**
+     * 发送数据到指定的终结点
+     * @param data
+     * @param host
+     * @param port
+     */
     public void sendTo(byte[] data,String host,int port){
         DatagramPacket dp=new DatagramPacket(data,data.length,new InetSocketAddress(host,port));
         try {
@@ -89,6 +112,9 @@ public class UDPSocket implements Thread.UncaughtExceptionHandler {
         }
     }
 
+    /**
+     * 关闭套接字
+     */
     public void shutdown() {
         _observe=false;
         if(thread!=null&&thread.isAlive()){
@@ -103,6 +129,11 @@ public class UDPSocket implements Thread.UncaughtExceptionHandler {
         }
     }
 
+    /**
+     * 线程未捕获异常回调
+     * @param t
+     * @param e
+     */
     @Override
     public void uncaughtException(Thread t, Throwable e) {
         System.out.println("Observe thread occurs an uncaught exception."+e.getMessage());

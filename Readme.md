@@ -1,6 +1,6 @@
 # mozi.iot4j
 
-iot4j是Java版的IoT物联网项目客户端标准通讯组件包，即IoT客户端包。该项目是Mozi.IoT.Client的Java客户端实现，项目功能与Mozi.IoT保持同步。由于作者的技术偏好为.Net向，故而会优先开发.Net版本，然后再开发Java版,Java的版本更迭相对会出现一点滞后。
+iot4j是Java版的IoT物联网客户端标准通讯组件包，即IoT客户端包。该项目是Mozi.IoT.Client的Java客户端实现，项目功能与Mozi.IoT保持同步。由于作者的技术偏好为.Net向，故而会优先开发.Net版本，然后再开发Java版,Java的版本更迭相对会出现一点滞后。
 
 ## Mozi.IoT物联网
 

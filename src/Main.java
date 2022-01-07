@@ -12,7 +12,7 @@ public class Main{
         client.start(12345);
         client.setResponseListener(new ResponseEvent() {
             @Override
-            public void onResponse(CoAPPackage cp) {
+            public void onResponse(String host,int port,CoAPPackage cp) {
                 //这里处理包的数据，加入业务逻辑
             }
         });

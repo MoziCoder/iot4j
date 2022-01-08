@@ -1,4 +1,5 @@
 package org.mozi.iot4j;
+
 // 代码 8bits=3bits+5bits
 // 高3位为分类
 // 低5位为明细
@@ -67,7 +68,7 @@ public class CoAPResponseCode extends CoAPCode {
     public static CoAPResponseCode MethodNotAllowed = new CoAPResponseCode("MethodNotAllowed", "Method Not Allowed", (byte) 4, (byte) 5);
     public static CoAPResponseCode NotAcceptable = new CoAPResponseCode("NotAcceptable", "Not Acceptable", (byte) 4, (byte) 6);
 
-    public static CoAPResponseCode RequestEntityIncomplete = new CoAPResponseCode(" RequestEntityIncomplete", " Request Entity Incomplete", (byte) 4, (byte) 8);
+    public static CoAPResponseCode RequestEntityIncomplete = new CoAPResponseCode("RequestEntityIncomplete", " Request Entity Incomplete", (byte) 4, (byte) 8);
 
     public static CoAPResponseCode PreconditionFailed = new CoAPResponseCode("PreconditionFailed", "Precondition Failed", (byte) 4, (byte) 12);
     public static CoAPResponseCode RequestEntityTooLarge = new CoAPResponseCode("RequestEntityTooLarge", "Request Entity Too Large", (byte) 4, (byte) 13);

@@ -12,6 +12,7 @@ package org.mozi.iot4j;
  * 0.03  PUT    | [RFC7252]
  * 0.04  DELETE | [RFC7252]
  */
+
 // 代码 8bits=3bits+5bits
 // 高3位为分类
 // 低5位为明细

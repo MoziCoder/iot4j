@@ -4,7 +4,6 @@ import org.mozi.iot4j.optionvalues.ArrayByteOptionValue;
 import org.mozi.iot4j.optionvalues.OptionValue;
 import org.mozi.iot4j.utils.ByteStreamUtil;
 import org.mozi.iot4j.utils.Uint32;
-
 import java.io.ByteArrayOutputStream;
 
 /**

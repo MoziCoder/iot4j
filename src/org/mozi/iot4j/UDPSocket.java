@@ -1,7 +1,6 @@
 package org.mozi.iot4j;
 
 import org.mozi.iot4j.event.PackageReceiveEvent;
-
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.*;

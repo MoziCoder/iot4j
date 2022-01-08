@@ -1,6 +1,7 @@
 package org.mozi.iot4j;
 
 /**
+ * CoAP选项定义
  * @author Jason
  * @date 2021/12/29
  *
@@ -79,7 +80,6 @@ public class CoAPOptionDefine extends AbsClassEnum {
 
     CoAPOptionDefine(String name,char optionNumber){
         _name=name;
-
         _optionNumber=optionNumber;
     }
 

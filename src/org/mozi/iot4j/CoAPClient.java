@@ -5,7 +5,6 @@ import org.mozi.iot4j.event.ResponseEvent;
 import org.mozi.iot4j.utils.StringUtil;
 import org.mozi.iot4j.utils.Uint32;
 import org.mozi.iot4j.utils.UriInfo;
-
 import java.net.DatagramPacket;
 
 /**
@@ -100,19 +99,20 @@ public class CoAPClient extends CoAPPeer {
     /**
      * 发送请求消息,此方法为高级方法。
      * 如果对协议不够了解，请不要调用。
-     * DOMAIN地址请先转换为IP地址，然后填充到 “Uri-Host”选项中
+     * 此方法不会调用DNS解析域名，DOMAIN地址请先转换为IP地址，然后填充到“Uri-Host”选项中
      *  @param host 服务器地址IPV4/IPV6
      *  @param port 服务器端口
      *  @param pack 数据报文
      * @returns MessageId
+     * @see CoAPPeer#sendMessage(String, int, CoAPPackage)
      */
+    @Override
     public char sendMessage(String host, int port, CoAPPackage pack) {
         if (pack.getMesssageId() == 0)
         {
             pack.setMesssageId(_cacheManager.GenerateMessageId());
         }
-        _socket.sendTo(pack.pack(), host, port);
-        return pack.getMesssageId();
+        return super.sendMessage(host,port,pack);
     }
 
     /**
@@ -121,6 +121,7 @@ public class CoAPClient extends CoAPPeer {
      * @param cp
      */
     private void PackUrl(UriInfo uri, CoAPPackage cp) {
+
         //注入域名
         if (!StringUtil.isNullOrEmpty(uri.Domain)) {
             cp.setOption(CoAPOptionDefine.UriHost, uri.Domain);
@@ -137,6 +138,7 @@ public class CoAPClient extends CoAPPeer {
         for (int i = 0; i < uri.Queries.length; i++) {
             cp.setOption(CoAPOptionDefine.UriQuery, uri.Queries[i]);
         }
+
     }
 
     /**

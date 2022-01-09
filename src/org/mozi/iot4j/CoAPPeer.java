@@ -99,7 +99,7 @@ public class CoAPPeer implements PackageReceiveEvent {
     /**
      * 发送请求消息,此方法为高级方法。
      * 如果对协议不够了解，请不要调用。
-     * 此方法不会调用DNS解析域名，DOMAIN地址请先转换为IP地址，然后填充到“Uri-Host”选项中
+     * 此方法不会调用DNS解析域名，Domain地址请先转换为IP地址，然后将Domain填充到“Uri-Host”选项中
      *  @param host 服务器地址IPV4/IPV6
      *  @param port 服务器端口
      *  @param pack 数据报文

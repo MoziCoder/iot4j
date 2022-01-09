@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 /**
+ * CoAP协议包
  * @author Jason
  * @date 2021/12/29
  *

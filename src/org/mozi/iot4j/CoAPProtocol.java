@@ -1,7 +1,7 @@
 package org.mozi.iot4j;
 
 /*
- * CoAP协议
+ * CoAP协议常量
  * @author Jason
  * @date 2021/12/29
  */

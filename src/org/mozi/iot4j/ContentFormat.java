@@ -25,7 +25,6 @@ public class ContentFormat extends AbsClassEnum {
     private char _num = 0;
     private String _contentType = "";
 
-
     public String getContentType() {
         return _contentType;
     }

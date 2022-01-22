@@ -10,6 +10,7 @@ package org.mozi.iot4j;
  *      256-9999 | IETF Review or IESG Approval
  *      10000-64999 | First Come First Served
  *      65000-65535 | Experimental use(no operational use)
+ *  </p>
  *  <p>
  *      text/plain;              | -        |  0 | [RFC2046] [RFC3676]    |
  *      charset=utf-8            |          |    | [RFC5147]              |
@@ -19,6 +20,7 @@ package org.mozi.iot4j;
  *      application/exi          | -        | 47 | [REC-exi-20140211]     |
  *      application/json         | -        | 50 | [RFC7159]              |
  *      applicaiton/cbor         | -        | 60 | [RFC7159]              |
+ *  </p>
  */
 public class ContentFormat extends AbsClassEnum {
 

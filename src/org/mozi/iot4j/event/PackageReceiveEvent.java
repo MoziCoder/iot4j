@@ -1,7 +1,5 @@
 package org.mozi.iot4j.event;
 
-import org.mozi.iot4j.CoAPPackage;
-
 import java.net.DatagramPacket;
 
 /**

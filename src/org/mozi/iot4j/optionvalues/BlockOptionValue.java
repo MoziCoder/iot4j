@@ -20,7 +20,7 @@ public class BlockOptionValue extends OptionValue
      */
     private boolean _moreFlag;
     /**
-     * 数据包总大小 占位3bits 低3位为其储存区间 值大小为1-6，表值范围16bytes-1024bytes
+     * 数据包总大小 占位3bits 低3位为其储存区间 值大小为1-6，表值范围16bytes-1024bytes 2**(value+4)
      */
     private char _size;
 

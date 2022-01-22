@@ -1,12 +1,11 @@
 package org.mozi.iot4j.cache;
 
-
 import org.mozi.iot4j.CoAPPeer;
 import org.mozi.iot4j.utils.ByteStreamUtil;
-
 import java.util.Random;
 
 /**
+ * 消息缓存管理器
  * @author Jason
  * @date 2021/1/4
  */

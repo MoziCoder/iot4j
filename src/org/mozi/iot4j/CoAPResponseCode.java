@@ -46,7 +46,6 @@ package org.mozi.iot4j;
 
 /**
  * 响应码
- *
  * @author Jason
  * @date 2021/12/29
  */

@@ -67,7 +67,8 @@ public class Main{
 
         //发起请求
         try {
-            client.get("coap://100.100.0.105/sensor/getinfo");
+            //127.0.0.1为CoAP服务器地址，调试时请修改为对应的服务器地址
+            client.get("coap://127.0.0.1/sensor/getinfo");
         }catch (Exception ex){
             System.out.println(ex.getMessage());
         }

@@ -5,7 +5,7 @@
                       http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <!--Basics-->
-    <groupId>org.mozi</groupId>
+    <groupId>com.mozicoder</groupId>
     <artifactId>iot4j</artifactId>
     <version>1.3.5</version>
     <packaging>pom</packaging>

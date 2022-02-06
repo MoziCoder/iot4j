@@ -1,6 +1,6 @@
-import org.mozi.iot4j.CoAPClient;
-import org.mozi.iot4j.CoAPPackage;
-import org.mozi.iot4j.event.ResponseEvent;
+import com.mozicoder.iot4j.CoAPClient;
+import com.mozicoder.iot4j.CoAPPackage;
+import com.mozicoder.iot4j.event.ResponseEvent;
 
 public class Main{
     /**

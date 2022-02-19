@@ -5,11 +5,10 @@ package com.mozicoder.iot4j;
  * @author Jason
  * @date 2021/12/29
  */
-public class DNSClient {
+public class DNSResolver {
 
     public static String getDomainAddress(String domain){
         //TODO DNS查询未实现
         return "";
     }
-
 }

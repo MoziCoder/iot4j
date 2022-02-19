@@ -1,7 +1,7 @@
 package com.mozicoder.iot4j.utils;
 
 import com.mozicoder.iot4j.CoAPProtocol;
-import com.mozicoder.iot4j.DNSClient;
+import com.mozicoder.iot4j.DNSResolver;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -101,7 +101,7 @@ public class UriInfo
             }
             if (isDomain)
             {
-                uri.Host = DNSClient.getDomainAddress(uri.Host);
+                uri.Host = DNSResolver.getDomainAddress(uri.Host);
             }
 
             //分离路径地址

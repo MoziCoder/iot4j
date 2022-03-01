@@ -80,7 +80,7 @@ public class CoAPClient extends CoAPPeer {
     public char sendMessage(String host, int port, CoAPPackage pack) {
         if (pack.getMesssageId() == 0)
         {
-            pack.setMesssageId(_cacheManager.GenerateMessageId());
+            pack.setMesssageId(_cacheManager.generateMessageId());
         }
         return super.sendMessage(host,port,pack);
     }
@@ -136,9 +136,9 @@ public class CoAPClient extends CoAPPeer {
         CoAPPackage cp = new CoAPPackage();
         cp.setCode(CoAPRequestMethod.Get);
         //TODO Token要实现一个生成器
-        cp.setToken(new byte[]{0x01, 0x02, 0x03, 0x04});
+        cp.setToken(_cacheManager.generateToken(8));
         //DONE MessageId的生成配合拥塞控制算法，此处指定为固定值
-        cp.setMesssageId(_cacheManager.GenerateMessageId());
+        cp.setMesssageId(_cacheManager.generateMessageId());
         cp.setMessageType(msgType == null ? CoAPMessageType.Confirmable : msgType);
         UriInfo uri = UriInfo.Parse(url);
 
@@ -179,9 +179,9 @@ public class CoAPClient extends CoAPPeer {
         CoAPPackage cp = new CoAPPackage();
         cp.setCode(CoAPRequestMethod.Post);
         //TODO Token要实现一个生成器
-        cp.setToken(new byte[]{0x01, 0x02, 0x03, 0x04});
+        cp.setToken(_cacheManager.generateToken(8));
         //DONE MessageId的生成配合拥塞控制算法，此处指定为固定值
-        cp.setMesssageId(_cacheManager.GenerateMessageId());
+        cp.setMesssageId(_cacheManager.generateMessageId());
         cp.setMessageType(msgType == null ? CoAPMessageType.Confirmable : msgType);
         UriInfo uri = UriInfo.Parse(url);
 
@@ -205,13 +205,63 @@ public class CoAPClient extends CoAPPeer {
     }
 
     //TODO 是否会出现安全问题
-    private void put(String url) {
+    private char put(String url, CoAPMessageType msgType, ContentFormat contentType, byte[] postBody) throws Exception {
+        CoAPPackage cp = new CoAPPackage();
+        cp.setCode(CoAPRequestMethod.Put);
+        //TODO Token要实现一个生成器
+        cp.setToken(_cacheManager.generateToken(8));
+        //DONE MessageId的生成配合拥塞控制算法，此处指定为固定值
+        cp.setMesssageId(_cacheManager.generateMessageId());
+        cp.setMessageType(msgType == null ? CoAPMessageType.Confirmable : msgType);
+        UriInfo uri = UriInfo.Parse(url);
 
+        if (!StringUtil.isNullOrEmpty(uri.Url)) {
+            PackUrl(uri, cp);
+
+            cp.setContentType(contentType);
+
+            cp.setPayload(postBody);
+
+            //发起通讯
+            if (!StringUtil.isNullOrEmpty(uri.Host)) {
+                sendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
+            } else {
+                throw new Exception(String.format("DNS无法解析指定的域名:%s", uri.Domain));
+            }
+        } else {
+            throw new Exception(String.format("本地无法解析指定的链接地址:%s", url));
+        }
+        return cp.getMesssageId();
     }
 
     //TODO 是否会出现安全问题
-    private void delete(String url) {
+    private char delete(String url, CoAPMessageType msgType, ContentFormat contentType) throws Exception {
 
+        CoAPPackage cp = new CoAPPackage();
+        cp.setCode(CoAPRequestMethod.Delete);
+        //TODO Token要实现一个生成器
+        cp.setToken(_cacheManager.generateToken(8));
+        //DONE MessageId的生成配合拥塞控制算法，此处指定为固定值
+        cp.setMesssageId(_cacheManager.generateMessageId());
+        cp.setMessageType(msgType == null ? CoAPMessageType.Confirmable : msgType);
+
+        UriInfo uri = UriInfo.Parse(url);
+
+        if (!StringUtil.isNullOrEmpty(uri.Url)) {
+            PackUrl(uri, cp);
+
+            cp.setContentType(contentType);
+
+            //发起通讯
+            if (!StringUtil.isNullOrEmpty(uri.Host)) {
+                sendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
+            } else {
+                throw new Exception(String.format("DNS无法解析指定的域名:%s", uri.Domain));
+            }
+        } else {
+            throw new Exception(String.format("本地无法解析指定的链接地址:%s", url));
+        }
+        return cp.getMesssageId();
     }
 
     /**

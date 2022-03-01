@@ -87,6 +87,13 @@ public class CoAPClient extends CoAPPeer {
 
     /**
      * 注入URL相关参数,domain,port,paths,queries
+     *  <list type="bullet">
+     *      <listheader>自动注入的Option</listheader>
+     *      <item><term><see cref="CoAPOptionDefine.UriHost"/></term>如果URL中的主机地址为域名，则注入此Option</item>
+     *      <item><term><see cref="CoAPOptionDefine.UriPort"/></term></item>
+     *      <item><term><see cref="CoAPOptionDefine.UriPath"/></term>以'/'分割Option</item>
+     *      <item><term><see cref="CoAPOptionDefine.UriQuery"/></term>以'&'分割Option</item>
+     *  </list>
      * @param uri
      * @param cp
      */
@@ -114,7 +121,7 @@ public class CoAPClient extends CoAPPeer {
     /**
      * Get提交 填入指定格式的URI，如果是域名，程序会调用DNS进行解析
      *
-     * @param url
+     * @param url 地址中的要素会被分解注入到Options中
      *      <list type="table">
      *            <listheader>URI格式:{host}-IPV4地址,IPV6地址,Domain域名;{path}-路径,请使用REST样式路径;{query}为查询参数字符串</listheader>
      *            <item><term>格式1：</term>coap://{host}[:{port}]/{path}</item>

@@ -3,8 +3,6 @@ package com.mozicoder.iot4j;
 import com.mozicoder.iot4j.optionvalues.*;
 import com.mozicoder.iot4j.utils.ByteStreamUtil;
 import com.mozicoder.iot4j.utils.Uint32;
-import org.mozi.iot4j.optionvalues.*;
-
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 

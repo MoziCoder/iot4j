@@ -6,6 +6,9 @@ import com.mozicoder.iot4j.utils.StringUtil;
 import com.mozicoder.iot4j.utils.Uint32;
 import com.mozicoder.iot4j.utils.UriInfo;
 import java.net.DatagramPacket;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 //TODO 即时响应ACK，延迟响应CON,消息可即时响应也可处理完成后响应，延迟消息需要后端缓存支撑
 //TODO 拥塞算法
@@ -131,11 +134,11 @@ public class CoAPClient extends CoAPPeer {
      * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
      * @returns MessageId
      */
-    public char get(String url, CoAPMessageType msgType) throws Exception {
+    public char get(String url, CoAPMessageType msgType, ArrayList<CoAPOption> options) throws Exception {
 
         CoAPPackage cp = new CoAPPackage();
         cp.setCode(CoAPRequestMethod.Get);
-        //TODO Token要实现一个生成器
+        //DONE Token要实现一个生成器
         cp.setToken(_cacheManager.generateToken(8));
         //DONE MessageId的生成配合拥塞控制算法，此处指定为固定值
         cp.setMesssageId(_cacheManager.generateMessageId());
@@ -146,6 +149,13 @@ public class CoAPClient extends CoAPPeer {
             PackUrl(uri, cp);
             //发起通讯
             if (!StringUtil.isNullOrEmpty(uri.Host)) {
+                if (options != null)
+                {
+                    for (CoAPOption opt:options)
+                    {
+                        cp.setOption(opt.getOption(), opt.getValue());
+                    }
+                }
                 sendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
             } else {
                 throw new Exception(String.format("DNS无法解析指定的域名:%s", uri.Domain));
@@ -157,28 +167,39 @@ public class CoAPClient extends CoAPPeer {
     }
 
     /**
+     * Get提交
+     * @param url 地址中的要素会被分解注入到Options中
+     * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
+     * @return MessageId
+     * @throws Exception
+     * @see #get(String, CoAPMessageType, ArrayList)
+     */
+    public char get(String url, CoAPMessageType msgType) throws Exception {
+        return get(url,msgType,null);
+    }
+    /**
      * Get方法，默认消息类型为{@CoAPMessageType.Confirmable}
-     * @param url
+     * @param url 地址中的要素会被分解注入到Options中
      * @returns MessageId
-     * @see #get(String, CoAPMessageType)
+     * @see #get(String, CoAPMessageType, ArrayList)
      */
     public char get(String url) throws Exception {
-        return get(url, CoAPMessageType.Confirmable);
+        return get(url, CoAPMessageType.Confirmable,null);
     }
 
     /**
      * Post方法，默认消息类型为{@CoAPMessageType.Confirmable}
-     * @param url
-     * @param msgType
+     * @param url 地址中的要素会被分解注入到Options中
+     * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
      * @param contentType
      * @param postBody
-     * @return
+     * @return MessageId
      * @throws Exception
      */
-    public char post(String url, CoAPMessageType msgType, ContentFormat contentType, byte[] postBody) throws Exception {
+    public char post(String url, CoAPMessageType msgType, ContentFormat contentType, ArrayList<CoAPOption> options, byte[] postBody) throws Exception {
         CoAPPackage cp = new CoAPPackage();
         cp.setCode(CoAPRequestMethod.Post);
-        //TODO Token要实现一个生成器
+        //DONE Token要实现一个生成器
         cp.setToken(_cacheManager.generateToken(8));
         //DONE MessageId的生成配合拥塞控制算法，此处指定为固定值
         cp.setMesssageId(_cacheManager.generateMessageId());
@@ -194,6 +215,13 @@ public class CoAPClient extends CoAPPeer {
 
             //发起通讯
             if (!StringUtil.isNullOrEmpty(uri.Host)) {
+                if (options != null)
+                {
+                    for (CoAPOption opt:options)
+                    {
+                        cp.setOption(opt.getOption(), opt.getValue());
+                    }
+                }
                 sendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
             } else {
                 throw new Exception(String.format("DNS无法解析指定的域名:%s", uri.Domain));
@@ -203,12 +231,50 @@ public class CoAPClient extends CoAPPeer {
         }
         return cp.getMesssageId();
     }
+    public char post(String url, CoAPMessageType msgType, ContentFormat contentType, byte[] postBody) throws Exception {
+        return post(url, msgType, contentType,null, postBody);
+    }
 
-    //TODO 是否会出现安全问题
-    private char put(String url, CoAPMessageType msgType, ContentFormat contentType, byte[] postBody) throws Exception {
+    /**
+     *
+     * @param url 地址中的要素会被分解注入到Options中
+     * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
+     * @param contentType
+     * @param options
+     * @param postBody
+     * @return MessageId
+     * @throws Exception
+     */
+    public char post(String url, CoAPMessageType msgType, ContentFormat contentType, ArrayList<CoAPOption> options, String postBody) throws Exception {
+        return post(url, msgType, contentType, options, postBody.getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
+     *
+     * @param url 地址中的要素会被分解注入到Options中
+     * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
+     * @param contentType
+     * @param postBody
+     * @return MessageId
+     * @throws Exception
+     */
+    public char post(String url, CoAPMessageType msgType, ContentFormat contentType,  String postBody) throws Exception {
+        return post(url, msgType, contentType, null, postBody);
+    }
+    /**
+     * PUT方法
+     * @param url 地址中的要素会被分解注入到Options中
+     * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
+     * @param contentType
+     * @param options
+     * @param postBody
+     * @return MessageId
+     * @throws Exception
+     */
+    public char put(String url, CoAPMessageType msgType, ContentFormat contentType, ArrayList<CoAPOption> options, byte[] postBody) throws Exception {
         CoAPPackage cp = new CoAPPackage();
         cp.setCode(CoAPRequestMethod.Put);
-        //TODO Token要实现一个生成器
+        //DONE Token要实现一个生成器
         cp.setToken(_cacheManager.generateToken(8));
         //DONE MessageId的生成配合拥塞控制算法，此处指定为固定值
         cp.setMesssageId(_cacheManager.generateMessageId());
@@ -224,6 +290,13 @@ public class CoAPClient extends CoAPPeer {
 
             //发起通讯
             if (!StringUtil.isNullOrEmpty(uri.Host)) {
+                if (options != null)
+                {
+                    for (CoAPOption opt:options)
+                    {
+                        cp.setOption(opt.getOption(), opt.getValue());
+                    }
+                }
                 sendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
             } else {
                 throw new Exception(String.format("DNS无法解析指定的域名:%s", uri.Domain));
@@ -234,12 +307,31 @@ public class CoAPClient extends CoAPPeer {
         return cp.getMesssageId();
     }
 
-    //TODO 是否会出现安全问题
-    private char delete(String url, CoAPMessageType msgType, ContentFormat contentType) throws Exception {
+    /**
+     * PUT方法
+     * @param url 地址中的要素会被分解注入到Options中
+     * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
+     * @param contentType
+     * @param options
+     * @return MessageId
+     */
+    public char put(String url, CoAPMessageType msgType, ContentFormat contentType, ArrayList<CoAPOption> options) throws Exception {
+        return put(url, msgType, contentType, options,null);
+    }
+    /**
+     * DELETE方法
+     * @param url 地址中的要素会被分解注入到Options中
+     * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
+     * @param contentType
+     * @param options
+     * @return MessageId
+     * @throws Exception
+     */
+    public char delete(String url, CoAPMessageType msgType, ContentFormat contentType, ArrayList<CoAPOption> options) throws Exception {
 
         CoAPPackage cp = new CoAPPackage();
         cp.setCode(CoAPRequestMethod.Delete);
-        //TODO Token要实现一个生成器
+        //DONE Token要实现一个生成器
         cp.setToken(_cacheManager.generateToken(8));
         //DONE MessageId的生成配合拥塞控制算法，此处指定为固定值
         cp.setMesssageId(_cacheManager.generateMessageId());
@@ -254,7 +346,15 @@ public class CoAPClient extends CoAPPeer {
 
             //发起通讯
             if (!StringUtil.isNullOrEmpty(uri.Host)) {
+                if (options != null)
+                {
+                    for (CoAPOption opt:options)
+                    {
+                        cp.setOption(opt.getOption(), opt.getValue());
+                    }
+                }
                 sendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
+
             } else {
                 throw new Exception(String.format("DNS无法解析指定的域名:%s", uri.Domain));
             }
@@ -262,8 +362,19 @@ public class CoAPClient extends CoAPPeer {
             throw new Exception(String.format("本地无法解析指定的链接地址:%s", url));
         }
         return cp.getMesssageId();
+
     }
 
+    /**
+     * DELETE方法
+     * @param url 地址中的要素会被分解注入到Options中
+     * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
+     * @param contentType
+     * @return MessageId
+     */
+    public char delete(String url, CoAPMessageType msgType, ContentFormat contentType) throws Exception {
+        return delete(url, msgType, contentType,null);
+    }
     /**
      * 接收数据回调
      * @param dp

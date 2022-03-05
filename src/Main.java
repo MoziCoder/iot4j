@@ -2,12 +2,14 @@ import com.mozicoder.iot4j.CoAPClient;
 import com.mozicoder.iot4j.CoAPPackage;
 import com.mozicoder.iot4j.event.ResponseEvent;
 
+import java.io.IOException;
+
 public class Main{
     /**
      *
      * @param args
      */
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException {
         CoAPClient client=new CoAPClient();
         //绑定本地端口
         client.start(12345);
@@ -26,6 +28,6 @@ public class Main{
             System.out.println(ex.getMessage());
         }
 
-        System.out.println("2342342342");
+        System.in.read();
     }
 }

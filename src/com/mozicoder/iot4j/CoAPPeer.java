@@ -44,6 +44,8 @@ import java.util.TimeZone;
  */
 public class CoAPPeer implements PackageReceiveEvent {
 
+    private int _blockSize = 128;
+
     protected  UDPSocket _socket;
 
     protected int BindPort = CoAPProtocol.Port;
@@ -51,7 +53,18 @@ public class CoAPPeer implements PackageReceiveEvent {
     protected ArrayList<CoAPCode> SupportedRequest = new ArrayList<CoAPCode>() ;
 
     private PackageReceiveEvent _packReceiveEvent;
-
+    /*
+    * 最小分块大小
+    * /
+    public static final int MinBlockSize = 16;
+    /*
+    * 最大分块大小
+    */
+    public static final int MaxBlockSize = 2048;
+    /**
+     * 当前端默认采用块大小,默认值为128bytes,单位Byte
+     * 在通讯两方没有进行协商的情况下，默认采用此值作为分块大小。取值区间为{@MinBlockSize}~{@MaxBlockSize"}</remarks>
+     */
     /**
      * 启动时间
      */
@@ -72,7 +85,12 @@ public class CoAPPeer implements PackageReceiveEvent {
     protected void setStartTime(Date dt){
         _startTime=dt;
     }
-
+    public int getBlockSize(){
+        return _blockSize;
+    }
+    public void setBlockSize(int size){
+        _blockSize=size;
+    }
     public CoAPPeer()
     {
 

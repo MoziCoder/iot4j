@@ -132,26 +132,26 @@ public class BlockOptionValue extends OptionValue
     @Override
     public byte[] getPack() {
         byte[] data;
-        Uint32 num = new Uint32((_num.getValue() << 4) | (byte)((byte) Logarithm.log(_size, 2) - 4));
+        Uint32 code = new Uint32((_num.getValue() << 4) | (byte)((byte) Logarithm.log(_size, 2) - 4));
         if (_moreFlag)
         {
-            num.setValue(num.getValue() | 8);
+            code.setValue(code.getValue() | 8);
         }
 
         if (_num.lt( 16))
         {
             data = new byte[1];
             //2022/3/7 此处取值错误，现已修正
-            data[0] = (byte)num.getValue();
+            data[0] = (byte)code.getValue();
         }
         else if (_num.lt( 4096))
         {
-            data = ByteStreamUtil.charToBytes((char)num.getValue());
+            data = ByteStreamUtil.charToBytes((char)code.getValue());
         }
         else
         {
             data = new byte[3];
-            System.arraycopy(ByteStreamUtil.uint32ToBytes(num), 1, data, 0, data.length);
+            System.arraycopy(ByteStreamUtil.uint32ToBytes(code), 1, data, 0, data.length);
         }
         return data;
     }

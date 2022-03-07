@@ -166,14 +166,41 @@ public class CoAPPackage
     public void setMessageType(CoAPMessageType messageType) {
         _msgType=messageType;
     }
+
+    //TODO 实现RFC8974
     /**
-    * Token长度 4bits
-    * 0-8bytes取值范围
-    * 9-15为保留使用，收到此消息时直接消息报错
-    */
+     * RFC7252定义：
+     *
+     * Token长度 4bits
+     * 0-8bytes取值范围
+     * 9-15为保留使用
+     *
+     * RFC8974定义
+     * 13-指示TokenLength>8  Token=4+8bits  TKL-Ext=Token.Lenght-13
+     * 14-指示TokenLength>269 Token=4+16bits TKL-Ext=Token.Length-269
+     * 15-报错
+     *
+     *
+     */
     public byte getTokenLength() {
         return (byte)(_token == null ? 0 : _token.length);
     }
+
+    //TODO 实现RFC8974
+    /**
+     * RFC7252定义：
+     *
+     * Token长度 4bits
+     * 0-8bytes取值范围
+     * 9-15为保留使用
+     *
+     * RFC8974定义
+     * 13-指示TokenLength>8  Token=4+8bits  TKL-Ext=Token.Lenght-13
+     * 14-指示TokenLength>269 Token=4+16bits TKL-Ext=Token.Length-269
+     * 15-报错
+     *
+     *
+     */
     public void setTokenLength(byte tokenLength) {
         if (tokenLength == 0)
         {

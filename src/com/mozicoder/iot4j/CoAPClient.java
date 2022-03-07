@@ -14,6 +14,9 @@ import java.util.ArrayList;
 //TODO 消息缓存
 //TODO 分块传输 RFC 7959
 //TODO 对象安全
+//TODO 映射CoAP到Http
+//TODO 观察者模式 观察者模式功能比较弱，是否考虑不实现？
+//TODO Extend Token Length RFC8974
 
 /**
  * CoAP客户端

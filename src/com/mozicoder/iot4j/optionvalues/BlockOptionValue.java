@@ -53,7 +53,7 @@ import com.mozicoder.iot4j.utils.Uint32;
 public class BlockOptionValue extends OptionValue
 {
     /**
-     * 块内位置 占位4-20bits 4 12 20
+     * 块序号 占位4-20bits 长度可以4bits，12bits，20bits
      */
     private Uint32 _num;
     /**
@@ -89,9 +89,32 @@ public class BlockOptionValue extends OptionValue
         _size=size;
     }
 
+    /**
+     * 解析BlockOptionValue值
+     * 字符串格式为 0/0/0 Num/MoreFlag/Size。
+     * 例如：
+     * 包序号为1，无更多包，分包尺寸大小为128byte
+     *     转为字符串： 1/0/128
+     * @param value
+     * @return
+     */
+    public static BlockOptionValue Parse(String value)
+    {
+        BlockOptionValue bv = null;
+        String[] pms = value.split("/");
+        if (pms.length == 3)
+        {
+            bv=new BlockOptionValue();
+            bv.setNum(new Uint32(Integer.parseInt(pms[0])));
+            bv.setMoreFlag(pms[1].equals("1"));
+            //这种转换会不会有问题？
+            bv.setSize((char)Integer.parseInt(pms[2]));
+        }
+        return bv;
+    }
     public  String toString()
     {
-        return getPack() == null ? "null" : String.format("%s,Num:%d,M:%d,SZX:%d(bytes)", "Block", _num, (_moreFlag ? 1 : 0), _size);
+        return getPack() == null ? "0/0/0" : String.format("%d/%d/%d", _num.getValue(), (_moreFlag ? 1 : 0), (long)_size);
     }
     /**
      * 属性赋值器无效，因为BlockValue不是由单一要素构造
@@ -114,10 +137,12 @@ public class BlockOptionValue extends OptionValue
         {
             num.setValue(num.getValue() | 8);
         }
+
         if (_num.lt( 16))
         {
             data = new byte[1];
-            data[0] = (byte)_num.getValue();
+            //2022/3/7 此处取值错误，现已修正
+            data[0] = (byte)num.getValue();
         }
         else if (_num.lt( 4096))
         {

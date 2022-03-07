@@ -94,11 +94,11 @@ public class CoAPClient extends CoAPPeer {
      * @param token
      * @param method
      * @param options
-     * @param body
+     * @param payload
      * @return
      * @throws Exception
      */
-    public char sendMessage(String url,CoAPMessageType msgType,char msgId,byte[] token,CoAPRequestMethod method, ArrayList<CoAPOption> options,byte[] body) throws Exception {
+    public char sendMessage(String url,CoAPMessageType msgType,char msgId,byte[] token,CoAPRequestMethod method, ArrayList<CoAPOption> options,byte[] payload) throws Exception {
         CoAPPackage cp = new CoAPPackage();
         cp.setCode(method);
         //DONE Token要实现一个生成器
@@ -110,7 +110,7 @@ public class CoAPClient extends CoAPPeer {
 
         if (!StringUtil.isNullOrEmpty(uri.Url)) {
             cp.setUri(uri);
-            cp.setPayload(body);
+            cp.setPayload(payload);
             //发起通讯
             if (!StringUtil.isNullOrEmpty(uri.Host)) {
                 if (options != null)
@@ -130,6 +130,19 @@ public class CoAPClient extends CoAPPeer {
         return cp.getMesssageId();
     }
 
+    /**
+     *
+     * @param url
+     * @param msgType
+     * @param method
+     * @param options
+     * @param payload
+     * @return
+     * @throws Exception
+     */
+    public  char sendMessage(String url,CoAPMessageType msgType,CoAPRequestMethod method, ArrayList<CoAPOption> options,byte[] payload) throws Exception {
+        return sendMessage(url,msgType,_cacheManager.generateMessageId(),_cacheManager.generateToken(8),method,options,payload);
+    }
 
     /**
      * Get方法 填入指定格式的URI，如果是域名，程序会调用DNS进行解析
@@ -204,11 +217,11 @@ public class CoAPClient extends CoAPPeer {
      * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
      * @param contentType
      * @param options
-     * @param postBody
+     * @param payload
      * @return MessageId
      * @throws Exception
      */
-    public char post(String url, CoAPMessageType msgType, ContentFormat contentType, ArrayList<CoAPOption> options, byte[] postBody) throws Exception {
+    public char post(String url, CoAPMessageType msgType, ContentFormat contentType, ArrayList<CoAPOption> options, byte[] payload) throws Exception {
         CoAPPackage cp = new CoAPPackage();
         cp.setCode(CoAPRequestMethod.Post);
         //DONE Token要实现一个生成器
@@ -222,7 +235,7 @@ public class CoAPClient extends CoAPPeer {
             cp.setUri(uri);
             cp.setContentType(contentType);
 
-            cp.setPayload(postBody);
+            cp.setPayload(payload);
 
             //发起通讯
             if (!StringUtil.isNullOrEmpty(uri.Host)) {
@@ -242,8 +255,8 @@ public class CoAPClient extends CoAPPeer {
         }
         return cp.getMesssageId();
     }
-    public char post(String url, CoAPMessageType msgType, ContentFormat contentType, byte[] postBody) throws Exception {
-        return post(url, msgType, contentType,null, postBody);
+    public char post(String url, CoAPMessageType msgType, ContentFormat contentType, byte[] payload) throws Exception {
+        return post(url, msgType, contentType,null, payload);
     }
 
     /**
@@ -252,12 +265,12 @@ public class CoAPClient extends CoAPPeer {
      * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
      * @param contentType
      * @param options
-     * @param postBody
+     * @param payload
      * @return MessageId
      * @throws Exception
      */
-    public char post(String url, CoAPMessageType msgType, ContentFormat contentType, ArrayList<CoAPOption> options, String postBody) throws Exception {
-        return post(url, msgType, contentType, options, postBody.getBytes(StandardCharsets.UTF_8));
+    public char post(String url, CoAPMessageType msgType, ContentFormat contentType, ArrayList<CoAPOption> options, String payload) throws Exception {
+        return post(url, msgType, contentType, options, payload.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -265,12 +278,12 @@ public class CoAPClient extends CoAPPeer {
      * @param url 地址中的要素会被分解注入到Options中
      * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
      * @param contentType
-     * @param postBody
+     * @param payload
      * @return MessageId
      * @throws Exception
      */
-    public char post(String url, CoAPMessageType msgType, ContentFormat contentType,  String postBody) throws Exception {
-        return post(url, msgType, contentType, null, postBody);
+    public char post(String url, CoAPMessageType msgType, ContentFormat contentType,  String payload) throws Exception {
+        return post(url, msgType, contentType, null, payload);
     }
     /**
      * PUT方法
@@ -278,11 +291,11 @@ public class CoAPClient extends CoAPPeer {
      * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
      * @param contentType
      * @param options
-     * @param postBody
+     * @param payload
      * @return MessageId
      * @throws Exception
      */
-    public char put(String url, CoAPMessageType msgType, ContentFormat contentType, ArrayList<CoAPOption> options, byte[] postBody) throws Exception {
+    public char put(String url, CoAPMessageType msgType, ContentFormat contentType, ArrayList<CoAPOption> options, byte[] payload) throws Exception {
         CoAPPackage cp = new CoAPPackage();
         cp.setCode(CoAPRequestMethod.Put);
         //DONE Token要实现一个生成器
@@ -297,7 +310,7 @@ public class CoAPClient extends CoAPPeer {
 
             cp.setContentType(contentType);
 
-            cp.setPayload(postBody);
+            cp.setPayload(payload);
 
             //发起通讯
             if (!StringUtil.isNullOrEmpty(uri.Host)) {

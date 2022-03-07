@@ -3,10 +3,8 @@ package com.mozicoder.iot4j;
 import com.mozicoder.iot4j.cache.MessageCacheManager;
 import com.mozicoder.iot4j.event.ResponseEvent;
 import com.mozicoder.iot4j.utils.StringUtil;
-import com.mozicoder.iot4j.utils.Uint32;
 import com.mozicoder.iot4j.utils.UriInfo;
 import java.net.DatagramPacket;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
@@ -76,8 +74,8 @@ public class CoAPClient extends CoAPPeer {
      *  @param host 服务器地址IPV4/IPV6
      *  @param port 服务器端口
      *  @param pack 数据报文
-     * @returns MessageId
-     * @see CoAPPeer#sendMessage(String, int, CoAPPackage)
+     *  @returns MessageId
+     *      @see CoAPPeer#sendMessage(String, int, CoAPPackage)
      */
     @Override
     public char sendMessage(String host, int port, CoAPPackage pack) {
@@ -89,49 +87,62 @@ public class CoAPClient extends CoAPPeer {
     }
 
     /**
-     * 注入URL相关参数,domain,port,paths,queries
-     *  <list type="bullet">
-     *      <listheader>自动注入的Option</listheader>
-     *      <item><term><see cref="CoAPOptionDefine.UriHost"/></term>如果URL中的主机地址为域名，则注入此Option</item>
-     *      <item><term><see cref="CoAPOptionDefine.UriPort"/></term></item>
-     *      <item><term><see cref="CoAPOptionDefine.UriPath"/></term>以'/'分割Option</item>
-     *      <item><term><see cref="CoAPOptionDefine.UriQuery"/></term>以'&'分割Option</item>
-     *  </list>
-     * @param uri
-     * @param cp
+     * 发送请求消息
+     * @param url
+     * @param msgType
+     * @param msgId
+     * @param token
+     * @param method
+     * @param options
+     * @param body
+     * @return
+     * @throws Exception
      */
-    private void PackUrl(UriInfo uri, CoAPPackage cp) {
+    public char sendMessage(String url,CoAPMessageType msgType,char msgId,byte[] token,CoAPRequestMethod method, ArrayList<CoAPOption> options,byte[] body) throws Exception {
+        CoAPPackage cp = new CoAPPackage();
+        cp.setCode(method);
+        //DONE Token要实现一个生成器
+        cp.setToken(token);
+        //DONE MessageId的生成配合拥塞控制算法，此处指定为固定值
+        cp.setMesssageId(msgId);
+        cp.setMessageType(msgType == null ? CoAPMessageType.Confirmable : msgType);
+        UriInfo uri = UriInfo.Parse(url);
 
-        //注入域名
-        if (!StringUtil.isNullOrEmpty(uri.Domain)) {
-            cp.setOption(CoAPOptionDefine.UriHost, uri.Domain);
+        if (!StringUtil.isNullOrEmpty(uri.Url)) {
+            cp.setUri(uri);
+            cp.setPayload(body);
+            //发起通讯
+            if (!StringUtil.isNullOrEmpty(uri.Host)) {
+                if (options != null)
+                {
+                    for (CoAPOption opt:options)
+                    {
+                        cp.setOption(opt.getOption(), opt.getValue());
+                    }
+                }
+                sendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
+            } else {
+                throw new Exception(String.format("DNS无法解析指定的域名:%s", uri.Domain));
+            }
+        } else {
+            throw new Exception(String.format("本地无法解析指定的链接地址:%s", url));
         }
-        //注入端口号
-        if (uri.Port > 0 && !(uri.Port == CoAPProtocol.Port || uri.Port == CoAPProtocol.SecurePort)) {
-            cp.setOption(CoAPOptionDefine.UriPort, new Uint32(uri.Port));
-        }
-        //注入路径
-        for (int i = 0; i < uri.Paths.length; i++) {
-            cp.setOption(CoAPOptionDefine.UriPath, uri.Paths[i]);
-        }
-        //注入查询参数
-        for (int i = 0; i < uri.Queries.length; i++) {
-            cp.setOption(CoAPOptionDefine.UriQuery, uri.Queries[i]);
-        }
-
+        return cp.getMesssageId();
     }
 
+
     /**
-     * Get提交 填入指定格式的URI，如果是域名，程序会调用DNS进行解析
+     * Get方法 填入指定格式的URI，如果是域名，程序会调用DNS进行解析
      *
      * @param url 地址中的要素会被分解注入到Options中
-     *      <list type="table">
-     *            <listheader>URI格式:{host}-IPV4地址,IPV6地址,Domain域名;{path}-路径,请使用REST样式路径;{query}为查询参数字符串</listheader>
-     *            <item><term>格式1：</term>coap://{host}[:{port}]/{path}</item>
-     *            <item><term>格式2：</term>coap://{host}[:{port}]/{path}[?{query}]</item>
-     *            <item><term>格式3：</term>coap://{host}[:{port}]/{path1}[/{path2}]...[/{pathN}][?{query}]</item>
-     *      </list>
+     *      URI格式:{host}-IPV4地址,IPV6地址,Domain域名;{path}-路径,请使用REST样式路径;{query}为查询参数字符串
+     *      <ul>
+     *            <li>格式1：coap://{host}[:{port}]/{path}</li>
+     *            <li>格式2：coap://{host}[:{port}]/{path}[?{query}]</li>
+     *            <li>格式3：coap://{host}[:{port}]/{path1}[/{path2}]...[/{pathN}][?{query}]</li>
+     *      </ul>
      * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
+     * @param options 选项值，可设置除{@CoAPOptionDefine.UriHost}{@CoAPOptionDefine.UriPort}{@CoAPOptionDefine.UriPath}{@CoAPOptionDefine.UriQuery}之外的选项值
      * @returns MessageId
      */
     public char get(String url, CoAPMessageType msgType, ArrayList<CoAPOption> options) throws Exception {
@@ -146,7 +157,7 @@ public class CoAPClient extends CoAPPeer {
         UriInfo uri = UriInfo.Parse(url);
 
         if (!StringUtil.isNullOrEmpty(uri.Url)) {
-            PackUrl(uri, cp);
+            cp.setUri(uri);
             //发起通讯
             if (!StringUtil.isNullOrEmpty(uri.Host)) {
                 if (options != null)
@@ -167,7 +178,7 @@ public class CoAPClient extends CoAPPeer {
     }
 
     /**
-     * Get提交
+     * Get方法
      * @param url 地址中的要素会被分解注入到Options中
      * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
      * @return MessageId
@@ -192,6 +203,7 @@ public class CoAPClient extends CoAPPeer {
      * @param url 地址中的要素会被分解注入到Options中
      * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
      * @param contentType
+     * @param options
      * @param postBody
      * @return MessageId
      * @throws Exception
@@ -207,8 +219,7 @@ public class CoAPClient extends CoAPPeer {
         UriInfo uri = UriInfo.Parse(url);
 
         if (!StringUtil.isNullOrEmpty(uri.Url)) {
-            PackUrl(uri, cp);
-
+            cp.setUri(uri);
             cp.setContentType(contentType);
 
             cp.setPayload(postBody);
@@ -236,7 +247,7 @@ public class CoAPClient extends CoAPPeer {
     }
 
     /**
-     *
+     * Post方法
      * @param url 地址中的要素会被分解注入到Options中
      * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
      * @param contentType
@@ -250,7 +261,7 @@ public class CoAPClient extends CoAPPeer {
     }
 
     /**
-     *
+     * Post方法
      * @param url 地址中的要素会被分解注入到Options中
      * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
      * @param contentType
@@ -282,7 +293,7 @@ public class CoAPClient extends CoAPPeer {
         UriInfo uri = UriInfo.Parse(url);
 
         if (!StringUtil.isNullOrEmpty(uri.Url)) {
-            PackUrl(uri, cp);
+            cp.setUri(uri);
 
             cp.setContentType(contentType);
 
@@ -322,12 +333,11 @@ public class CoAPClient extends CoAPPeer {
      * DELETE方法
      * @param url 地址中的要素会被分解注入到Options中
      * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
-     * @param contentType
      * @param options
      * @return MessageId
      * @throws Exception
      */
-    public char delete(String url, CoAPMessageType msgType, ContentFormat contentType, ArrayList<CoAPOption> options) throws Exception {
+    public char delete(String url, CoAPMessageType msgType,ArrayList<CoAPOption> options) throws Exception {
 
         CoAPPackage cp = new CoAPPackage();
         cp.setCode(CoAPRequestMethod.Delete);
@@ -340,10 +350,7 @@ public class CoAPClient extends CoAPPeer {
         UriInfo uri = UriInfo.Parse(url);
 
         if (!StringUtil.isNullOrEmpty(uri.Url)) {
-            PackUrl(uri, cp);
-
-            cp.setContentType(contentType);
-
+            cp.setUri(uri);
             //发起通讯
             if (!StringUtil.isNullOrEmpty(uri.Host)) {
                 if (options != null)
@@ -369,11 +376,10 @@ public class CoAPClient extends CoAPPeer {
      * DELETE方法
      * @param url 地址中的要素会被分解注入到Options中
      * @param msgType 消息类型，默认为{@CoAPMessageType.Confirmable}
-     * @param contentType
      * @return MessageId
      */
-    public char delete(String url, CoAPMessageType msgType, ContentFormat contentType) throws Exception {
-        return delete(url, msgType, contentType,null);
+    public char delete(String url, CoAPMessageType msgType) throws Exception {
+        return delete(url, msgType,null);
     }
     /**
      * 接收数据回调

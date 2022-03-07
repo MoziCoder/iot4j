@@ -2,7 +2,10 @@ package com.mozicoder.iot4j;
 
 import com.mozicoder.iot4j.optionvalues.*;
 import com.mozicoder.iot4j.utils.ByteStreamUtil;
+import com.mozicoder.iot4j.utils.StringUtil;
 import com.mozicoder.iot4j.utils.Uint32;
+import com.mozicoder.iot4j.utils.UriInfo;
+
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
@@ -448,6 +451,56 @@ public class CoAPPackage
             }
         }
         return String.join("&",query);
+    }
+    /**
+     * 将URI信息配置到包中，即domain,port,paths,queries注入到"Options"中
+     * 自动注入的Option:
+     *  <ul>
+     *      <li>{@CoAPOptionDefine.UriHost}如果URL中的主机地址为域名，则注入此Option</li>
+     *      <li>{@CoAPOptionDefine.UriPort}</li>
+     *      <li>{@CoAPOptionDefine.UriPath}以'/'分割Option</li>
+     *      <li>{@CoAPOptionDefine.UriQuery}以'&'分割Option</li>
+     *  </ul>
+     * @param uri
+     * @return
+     */
+    public CoAPPackage setUri(UriInfo uri) {
+
+        //注入域名
+        if (!StringUtil.isNullOrEmpty(uri.Domain)) {
+            setOption(CoAPOptionDefine.UriHost, uri.Domain);
+        }
+        //注入端口号
+        if (uri.Port > 0 && !(uri.Port == CoAPProtocol.Port || uri.Port == CoAPProtocol.SecurePort)) {
+            setOption(CoAPOptionDefine.UriPort, new Uint32(uri.Port));
+        }
+        //注入路径
+        for (int i = 0; i < uri.Paths.length; i++) {
+            setOption(CoAPOptionDefine.UriPath, uri.Paths[i]);
+        }
+        //注入查询参数
+        for (int i = 0; i < uri.Queries.length; i++) {
+            setOption(CoAPOptionDefine.UriQuery, uri.Queries[i]);
+        }
+        return this;
+    }
+    public CoAPPackage(){
+
+    }
+
+    /**
+     * 带参数实例化，最小参数量实例化
+     * @param method
+     * @param token
+     * @param msgId
+     * @param msgType
+     */
+    public CoAPPackage(CoAPRequestMethod method,byte[] token,char msgId,CoAPMessageType msgType)
+    {
+        _code = method;
+        _token = token;
+        _msgId = msgId;
+        _msgType = msgType;
     }
 }
 

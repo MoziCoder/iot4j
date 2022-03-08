@@ -442,7 +442,9 @@ public class CoAPPackage
         {
             if (op.getOption() == CoAPOptionDefine.UriHost)
             {
-                domain = (String)(op.getValue().getValue());
+                StringOptionValue opv=new StringOptionValue();
+                opv.setPack(op.getPack());
+                domain = (String)(opv.getValue());
             }
         }
         return domain;
@@ -458,7 +460,9 @@ public class CoAPPackage
         {
             if (op.getOption() == CoAPOptionDefine.UriPath)
             {
-                path.append("/").append((String) op.getValue().getValue());
+                StringOptionValue opv=new StringOptionValue();
+                opv.setPack(op.getPack());
+                path.append("/").append((String) opv.getValue());
             }
         }
         return path.toString();
@@ -474,7 +478,9 @@ public class CoAPPackage
         {
             if (op.getOption() == CoAPOptionDefine.UriQuery)
             {
-                query.add((String)(op.getValue().getValue()));
+                StringOptionValue opv=new StringOptionValue();
+                opv.setPack(op.getPack());
+                query.add((String)(opv.getValue()));
             }
         }
         return String.join("&",query);

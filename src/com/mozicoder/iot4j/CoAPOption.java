@@ -186,6 +186,6 @@ public class CoAPOption {
     }
 
     public CoAPOption() {
-        _optValue = new ArrayByteOptionValue();
+        _optValue = new OptionValue();
     }
 }

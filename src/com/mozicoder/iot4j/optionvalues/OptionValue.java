@@ -6,23 +6,26 @@ package com.mozicoder.iot4j.optionvalues;
  * @author Jason
  * @date 2021/12/29
 */
-public abstract class OptionValue
+public class OptionValue
 {
 
     protected   Object _value;
     protected  byte[] _pack ;
     protected  int _length ;
 
-    public abstract Object getValue();
+    public   Object getValue(){
+        return _value;
+    }
 
-    public abstract void setValue(Object value);
+    public  void setValue(Object value){_value=value;}
 
-    public abstract byte[] getPack();
+    public  byte[] getPack(){return _pack;}
 
-    public abstract void setPack(byte[] pack) ;
+    public  void setPack(byte[] pack){_pack=pack;};
 
-    public abstract int getLength();
-
+    public  int getLength(){
+        return _pack!=null?_pack.length:0;
+    }
 }
 
 //RFC8974

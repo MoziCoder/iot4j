@@ -160,6 +160,11 @@ public class CoAPOption {
         setLengthValue(new Uint32(optValue != null ? optValue.getLength() : 0));
     }
 
+    /**
+     * 选项数据包 定义头+数据值
+     * {Delta,OptionsLength,DeltaExtend,LengthExtend,OptionValue}的数据值
+     * @return
+     */
     public byte[] getPack() {
         try {
             byte head = getOptionHead();

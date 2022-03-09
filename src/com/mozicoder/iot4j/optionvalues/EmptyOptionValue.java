@@ -31,4 +31,9 @@ public class EmptyOptionValue extends OptionValue {
         public int getLength(){
             return 0;
         }
+
+        @Override
+        public String toString() {
+                return "";
+        }
 }

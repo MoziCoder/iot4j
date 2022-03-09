@@ -112,7 +112,7 @@ public class BlockOptionValue extends OptionValue
         }
         return bv;
     }
-    public  String toString()
+    public String toString()
     {
         return getPack() == null ? "0/0/0" : String.format("%d/%d/%d", _num.getValue(), (_moreFlag ? 1 : 0), (long)_size);
     }

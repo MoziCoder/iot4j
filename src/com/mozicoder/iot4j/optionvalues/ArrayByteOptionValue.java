@@ -1,5 +1,7 @@
 package com.mozicoder.iot4j.optionvalues;
 
+import com.mozicoder.iot4j.utils.Hex;
+
 /**
  * 字节数组选项值
  * @author Jason
@@ -30,5 +32,14 @@ public class ArrayByteOptionValue extends OptionValue
     @Override
     public int getLength() {
         return _pack!=null?_pack.length:0;
+    }
+
+    @Override
+    public String toString() {
+        if(_pack!=null) {
+            return Hex.To((byte[]) getValue());
+        }else {
+            return "";
+        }
     }
 }

@@ -309,6 +309,22 @@ public class CoAPPackage
         return setOption(define, new EmptyOptionValue());
     }
 
+    public CoAPPackage setOption(CoAPOption opt){
+        int optGreater=0;
+
+        for (CoAPOption op: _options) {
+            if(op.getOption().getOptionNumber()>(opt.getOption().getOptionNumber())){
+                optGreater= _options.indexOf(op);
+            }
+            //var optGreater = Options.FindIndex(x => x.DeltaValue > option.DeltaValue);
+        }
+        if (optGreater < 0)
+        {
+            optGreater = _options.size();
+        }
+        _options.add(optGreater, opt);
+        return this;
+    }
     //DONE 此处方法有问题
     /**
     * 设置选项值，此方法可以设置自定义的选项值类型
@@ -320,20 +336,7 @@ public class CoAPPackage
         CoAPOption option = new CoAPOption();
         option.setOption(define);
         option.setValue(optionValue);
-        int optGreater=0;
-
-        for (CoAPOption op: _options) {
-            if(op.getOption().getOptionNumber()>(define.getOptionNumber())){
-                optGreater= _options.indexOf(op);
-            }
-            //var optGreater = Options.FindIndex(x => x.DeltaValue > option.DeltaValue);
-        }
-        if (optGreater < 0)
-        {
-            optGreater = _options.size();
-        }
-        _options.add(optGreater, option);
-        return this;
+        return setOption(option);
     }
     /**
     * 设置字节流选项值
@@ -344,8 +347,7 @@ public class CoAPPackage
     {
         ArrayByteOptionValue ao=new ArrayByteOptionValue() { };
         ao.setValue(optionValue);
-        setOption(define,ao);
-        return this;
+        return setOption(define,ao);
     }
     /**
     * 设置uint(32)选项值
@@ -443,7 +445,7 @@ public class CoAPPackage
             if (op.getOption() == CoAPOptionDefine.UriHost)
             {
                 StringOptionValue opv=new StringOptionValue();
-                opv.setPack(op.getPack());
+                opv.setPack(op.getValue().getPack());
                 domain = (String)(opv.getValue());
             }
         }
@@ -461,7 +463,7 @@ public class CoAPPackage
             if (op.getOption() == CoAPOptionDefine.UriPath)
             {
                 StringOptionValue opv=new StringOptionValue();
-                opv.setPack(op.getPack());
+                opv.setPack(op.getValue().getPack());
                 path.append("/").append((String) opv.getValue());
             }
         }
@@ -479,7 +481,7 @@ public class CoAPPackage
             if (op.getOption() == CoAPOptionDefine.UriQuery)
             {
                 StringOptionValue opv=new StringOptionValue();
-                opv.setPack(op.getPack());
+                opv.setPack(op.getValue().getPack());
                 query.add((String)(opv.getValue()));
             }
         }

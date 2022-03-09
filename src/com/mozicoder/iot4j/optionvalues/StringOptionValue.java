@@ -39,4 +39,9 @@ public class StringOptionValue extends OptionValue
     public int getLength() {
         return _pack != null ? _pack.length : 0;
     }
+
+    @Override
+    public String toString() {
+        return getValue().toString();
+    }
 }

@@ -4,6 +4,7 @@ import com.mozicoder.iot4j.event.PackageReceiveEvent;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.*;
+import java.util.Arrays;
 
 /**
  * Udp通讯组件
@@ -135,6 +136,6 @@ public class UDPSocket implements Thread.UncaughtExceptionHandler {
      */
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        System.out.println("Observe thread occurs an uncaught exception."+e.getMessage());
+        System.out.println("Observe thread occurs an uncaught exception."+e.getMessage()+"\r\n"+ Arrays.toString(e.getStackTrace()));
     }
 }

@@ -92,8 +92,8 @@ public class CoAPCode extends AbsClassEnum
      }
 
      public void setPack(byte pack) {
-         _category = (byte)(pack >> 5);
-         _detail = (byte)((pack << 3) >> 3);
+         _category = (byte)((pack >> 5)&0b00000111);
+         _detail = (byte)(pack&0b00011111);
      }
 
       protected CoAPCode(String name, String description, byte category, byte detail)

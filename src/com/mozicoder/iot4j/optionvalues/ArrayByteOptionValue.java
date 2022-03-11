@@ -15,8 +15,9 @@ public class ArrayByteOptionValue extends OptionValue
     }
 
     @Override
-    public void setValue(Object value) {
+    public OptionValue setValue(Object value) {
         _pack = (byte[])value;
+        return this;
     }
 
     @Override
@@ -25,8 +26,9 @@ public class ArrayByteOptionValue extends OptionValue
     }
 
     @Override
-    public void setPack(byte[] pack) {
+    public OptionValue setPack(byte[] pack) {
         _pack = pack;
+        return this;
     }
 
     @Override

@@ -125,8 +125,8 @@ public class BlockOptionValue extends OptionValue
     }
 
     @Override
-    public void setValue(Object value) {
-
+    public OptionValue setValue(Object value) {
+        return this;
     }
 
     @Override
@@ -157,14 +157,15 @@ public class BlockOptionValue extends OptionValue
     }
 
     @Override
-    public void setPack(byte[] pack) {
+    public OptionValue setPack(byte[] pack) {
 
-        _size = (char)Math.pow(2, (((byte)(pack[pack.length-1] << 5)) >> 5) + 4);
+        _size = (char)Math.pow(2, (((byte)((pack[pack.length-1] << 5))&0b11100000) >> 5) + 4);
         _moreFlag = (pack[pack.length-1] & 8) == 8;
         byte[] data = new byte[4];
         System.arraycopy(pack, 0, data, data.length - pack.length, pack.length);
-        _num = ByteStreamUtil.uint32FromBytes(data);
-
+        //此处应右移4位
+        _num = new Uint32((ByteStreamUtil.uint32FromBytes(data).getValue()>>4)&0b00001111);
+        return  this;
     }
 
     @Override

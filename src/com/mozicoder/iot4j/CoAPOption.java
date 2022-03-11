@@ -44,12 +44,12 @@ public class CoAPOption {
     }
 
     public byte getOptionHead() {
-        return (byte) (((byte) (_delta << 4)) | _length);
+        return (byte) (((byte) ((_delta << 4))) | _length);
     }
 
     public void setOptionHead(byte head) {
-        _delta = (byte) (head >> 4);
-        _length = (byte) ((byte) (head << 4) >> 4);
+        _delta = (byte)(((head)>>4)&0x0f);
+        _length = (byte)(head&0x0f);
     }
 
 

@@ -17,12 +17,13 @@ public class StringOptionValue extends OptionValue
     }
 
     @Override
-    public void setValue(Object value) {
+    public OptionValue setValue(Object value) {
         try {
             _pack = ((String) value).getBytes("UTF-8");
         }catch (Exception ex){
             System.out.println(ex.getMessage());
         }
+        return this;
     }
 
     @Override
@@ -31,8 +32,9 @@ public class StringOptionValue extends OptionValue
     }
 
     @Override
-    public void setPack(byte[] pack) {
+    public OptionValue setPack(byte[] pack) {
         _pack=pack;
+        return this;
     }
 
     @Override

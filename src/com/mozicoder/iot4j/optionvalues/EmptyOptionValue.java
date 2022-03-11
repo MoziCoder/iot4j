@@ -13,8 +13,8 @@ public class EmptyOptionValue extends OptionValue {
         }
 
         @Override
-        public void setValue(Object value) {
-
+        public OptionValue setValue(Object value) {
+            return this;
         }
 
         @Override
@@ -23,8 +23,8 @@ public class EmptyOptionValue extends OptionValue {
         }
 
         @Override
-        public void setPack(byte[] pack) {
-
+        public OptionValue setPack(byte[] pack) {
+            return this;
         }
 
         @Override

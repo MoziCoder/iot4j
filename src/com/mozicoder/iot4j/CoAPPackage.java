@@ -46,10 +46,10 @@ public class CoAPPackage
     {
         CoAPPackage pack = new CoAPPackage();
         byte head = data[0];
-        pack.setVersion((byte)(head >> 6));
+        pack.setVersion((byte)((head >> 6)&0b00000011));
         //TODO Java只有有符号的数值类型，此处的方法是直接对高位进行&运算
-        pack.setMessageType((CoAPMessageType)AbsClassEnum.get(String.valueOf(((byte)(head<<2)&0xC0)>>6),CoAPMessageType.class));
-        pack.setTokenLength((byte)((byte)(head << 4) >> 4));
+        pack.setMessageType((CoAPMessageType)AbsClassEnum.get(String.valueOf((byte)((head>>4)&0b00000011)),CoAPMessageType.class));
+        pack.setTokenLength((byte)(head&0b00001111));
 
         pack.setCode(packType==CoAPPackageType.Request ? (CoAPCode)AbsClassEnum.get(String.valueOf(data[1]),CoAPRequestMethod.class) : (CoAPCode)AbsClassEnum.get(String.valueOf(data[1]),CoAPResponseCode.class));
         pack.setPackageType(packType);
@@ -66,7 +66,7 @@ public class CoAPPackage
         {
 
             CoAPOption option = new CoAPOption();
-            option.setOptionHead( data[bodySplitterPos]);
+            option.setOptionHead(data[bodySplitterPos]);
             //byte len=(byte)(option.OptionHead)
             int lenDeltaExt = 0, lenLengthExt = 0;
             if (option.getDelta() <= 12)
@@ -116,7 +116,7 @@ public class CoAPPackage
 
             option.getValue().setValue(new byte[(int) option.getLengthValue().getValue()]);
             System.arraycopy(data, bodySplitterPos + 1 + lenDeltaExt + lenLengthExt, option.getValue().getPack(), 0, option.getValue().getLength());
-            pack._options.add(option);
+            pack.setOption(option);
             deltaSum=new Uint32(option.getDelta());
             //头长度+delta扩展长度+len
             bodySplitterPos += 1 + lenDeltaExt + lenLengthExt + option.getValue().getLength();
@@ -278,7 +278,7 @@ public class CoAPPackage
             head = (byte) (head | getTokenLength());
 
             bos.write(head);
-            bos.write((byte) (((byte) _code.getCategory() << 5) | ((byte) (_code.getDetail() << 3) >> 3)));
+            bos.write((byte) (((byte) ((_code.getCategory() << 5))) | ((byte) ((_code.getDetail() << 3)) >> 3)));
             bos.write(ByteStreamUtil.charToBytes(_msgId));
             bos.write(_token);
             Uint32 delta = new Uint32(0);
@@ -309,12 +309,22 @@ public class CoAPPackage
         return setOption(define, new EmptyOptionValue());
     }
 
+    /**
+     * 设置选项值
+     * @param opt
+     * @return
+     */
     public CoAPPackage setOption(CoAPOption opt){
-        int optGreater=0;
+        int optGreater=-1;
 
         for (CoAPOption op: _options) {
-            if(op.getOption().getOptionNumber()>(opt.getOption().getOptionNumber())){
+            if(op.getOption().getOptionNumber()>opt.getOption().getOptionNumber()){
                 optGreater= _options.indexOf(op);
+                break;
+            }else{
+                int i=op.getOption().getOptionNumber();
+                int j=opt.getOption().getOptionNumber();
+                int k=0;
             }
             //var optGreater = Options.FindIndex(x => x.DeltaValue > option.DeltaValue);
         }
@@ -519,6 +529,14 @@ public class CoAPPackage
         }
         return this;
     }
+
+    /**
+     * 取所有选项参数
+     * @return
+     */
+    public ArrayList<CoAPOption> getOptions(){
+        return _options;
+    }
     public CoAPPackage(){
 
     }
@@ -539,47 +557,4 @@ public class CoAPPackage
     }
 }
 
-// 代码 8bits=3bits+5bits
-// 高3位为分类 
-// 低5位为明细
-// 
-//  0.00      Indicates an Empty message (see Section 4.1).
-//  0.01-0.31 Indicates a request.Values in this range are assigned by the "CoAP Method Codes" sub-registry(see Section 12.1.1).
-//     0.01  GET    | [RFC7252] 
-//     0.02  POST   | [RFC7252] 
-//     0.03  PUT    | [RFC7252] 
-//     0.04  DELETE | [RFC7252]
-//     
-//  1.00-1.31 Reserved
-//  2.00-5.31 Indicates a response.Values in this range are assigned bythe "CoAP Response Codes" sub-registry(see Section 12.1.2).
-//  
-//     2.01 | Created                      | [RFC7252] |
-//     2.02 | Deleted                      | [RFC7252] |
-//     2.03 | Valid                        | [RFC7252] |
-//     2.04 | Changed                      | [RFC7252] |
-//     2.05 | Content                      | [RFC7252] |
-//     
-//     2.31 | Continue                     | [RFC7959] |
-//     
-//     4.00 | Bad Request                  | [RFC7252] |
-//     4.01 | Unauthorized                 | [RFC7252] |
-//     4.02 | Bad Option                   | [RFC7252] |
-//     4.03 | Forbidden                    | [RFC7252] |
-//     4.04 | Not Found                    | [RFC7252] |
-//     4.05 | Method Not Allowed           | [RFC7252] |
-//     4.06 | Not Acceptable               | [RFC7252] |
-//     
-//     4.08 | Request Entity Incomplete    | [RFC7959] |
-//     
-//     4.12 | Precondition Failed          | [RFC7252] |
-//     4.13 | Request Entity Too Large     | [RFC7252] |
-//     4.15 | Unsupported Content-Format   | [RFC7252] |
-//     5.00 | Internal Server Error        | [RFC7252] |
-//     5.01 | Not Implemented              | [RFC7252] |
-//     5.02 | Bad Gateway                  | [RFC7252] |
-//     5.03 | Service Unavailable          | [RFC7252] |
-//     5.04 | Gateway Timeout              | [RFC7252] |
-//     5.05 | Proxying Not Supported       | [RFC7252] |
-//     
-//  6.00-7.31 Reserved
 

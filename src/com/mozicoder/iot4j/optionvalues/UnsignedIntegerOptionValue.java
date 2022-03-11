@@ -29,7 +29,7 @@ public class UnsignedIntegerOptionValue extends OptionValue
     }
 
     @Override
-    public void setValue(Object value) {
+    public OptionValue setValue(Object value) {
 
         Uint32 num = new Uint32((Integer)value);
         byte[] data = ByteStreamUtil.uint32ToBytes(num);
@@ -49,7 +49,7 @@ public class UnsignedIntegerOptionValue extends OptionValue
         else {
             _pack = data;
         }
-
+        return this;
     }
 
     /**
@@ -61,8 +61,9 @@ public class UnsignedIntegerOptionValue extends OptionValue
     }
 
     @Override
-    public void setPack(byte[] pack) {
+    public OptionValue setPack(byte[] pack) {
         _pack=pack;
+        return this;
     }
 
     @Override

@@ -62,6 +62,8 @@ public class CoAPCode extends AbsClassEnum
     private String _name = "", _description;
 
     private byte _category = 0, _detail = 0;
+
+    public static CoAPCode Empty = new CoAPCode("Empty", "Empty Message", (byte)0, (byte)0);
     /**
     * 分类
     */

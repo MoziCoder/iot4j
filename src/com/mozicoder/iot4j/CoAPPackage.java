@@ -7,6 +7,7 @@ import com.mozicoder.iot4j.utils.Uint32;
 import com.mozicoder.iot4j.utils.UriInfo;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 /**
@@ -52,6 +53,10 @@ public class CoAPPackage
         pack.setTokenLength((byte)(head&0b00001111));
 
         pack.setCode(packType==CoAPPackageType.Request ? (CoAPCode)AbsClassEnum.get(String.valueOf(data[1]),CoAPRequestMethod.class) : (CoAPCode)AbsClassEnum.get(String.valueOf(data[1]),CoAPResponseCode.class));
+        if (null==pack.getCode())
+        {
+            pack.setCode(CoAPCode.Empty);
+        }
         pack.setPackageType(packType);
         byte[] arrMsgId = new byte[2], arrToken = new byte[pack.getTokenLength()];
         System.arraycopy(data, 2, arrMsgId, 0, 2);
@@ -252,8 +257,21 @@ public class CoAPPackage
     //    get;
     //    set;
     //}
+
+    /**
+     * 设置荷载
+     * @param payload
+     */
     public void setPayload(byte[] payload) {
         _payload=payload;
+    }
+
+    /**
+     * 设置荷载
+     * @param text
+     */
+    public void setPayload(String text){
+        setPayload(text.getBytes(StandardCharsets.UTF_8));
     }
     /**
     * 转为HTTP包,ASCII字符串数据包

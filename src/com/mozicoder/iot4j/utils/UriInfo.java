@@ -41,7 +41,7 @@ public class UriInfo
         String[] paths;
         boolean isDomain = false;
 
-        Pattern reg = Pattern.compile("^[a-zA-Z]+://((([a-zA-Z0-9.-]+){2,})|(\\[?[a-zA-Z0-9.:]+){2,}]?)(:\\d+)?((/[a-zA-Z0-9-.%]+){0,}(\\?)?([%=a-zA-Z0-9]+(&)?)*)$",Pattern.DOTALL);
+        Pattern reg = Pattern.compile("^[a-zA-Z]+://((([a-zA-Z0-9.-]+){2,})|(\\[?[a-zA-Z0-9.:]+){2,}]?)(:\\d+)?((/[a-zA-Z0-9-.%]+){0,}(\\?)?([%=a-zA-Z0-9.*]+(&)?)*)$",Pattern.DOTALL);
 
         Pattern regProto = Pattern.compile("[a-zA-Z]+(?=://)");
         Pattern regHost = Pattern.compile("(?<=://)(([a-zA-Z0-9-]+\\.?){2,}|(\\[?[a-zA-Z0-9-.:]+){2,}]?)(:\\d+)?");
@@ -51,7 +51,7 @@ public class UriInfo
         Pattern regDomain = Pattern.compile("^(([a-zA-Z0-9-]+(\\.)?){2,})|(([a-zA-Z0-9-]+(\\.)?){2,}(?=:\\d+))$");
 
         Pattern regPath = Pattern.compile("(?<=://[a-zA-Z0-9.:]{0,1024})(/[a-zA-Z0-9-.%]{0,1024}){1,1024}((?=\\?))?");
-        Pattern regQuery = Pattern.compile("(?<=\\?)([%=a-zA-Z0-9-]+(&)?){1,1024}");
+        Pattern regQuery = Pattern.compile("(?<=\\?)([%=a-zA-Z0-9.*]+(&)?){1,1024}");
 
         if (reg.matcher(url).find())
         {

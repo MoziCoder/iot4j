@@ -132,11 +132,7 @@ public class BlockOptionValue extends OptionValue
     @Override
     public byte[] getPack() {
         byte[] data;
-        Uint32 code = new Uint32((_num.getValue() << 4) | (byte)((byte) Logarithm.log(_size, 2) - 4));
-        if (_moreFlag)
-        {
-            code.setValue(code.getValue() | 8);
-        }
+        Uint32 code = new Uint32((_num.getValue() << 4));
 
         if (_num.lt( 16))
         {
@@ -152,6 +148,13 @@ public class BlockOptionValue extends OptionValue
         {
             data = new byte[3];
             System.arraycopy(ByteStreamUtil.uint32ToBytes(code), 1, data, 0, data.length);
+        }
+        byte blockLog=(byte) Logarithm.log(_size, 2);
+        data[data.length - 1] =(byte)(data[data.length - 1] |(blockLog>=4?(blockLog-4):(byte)0));
+
+        if (_moreFlag)
+        {
+           data[data.length - 1] =(byte)(data[data.length - 1] | 8);
         }
         return data;
     }

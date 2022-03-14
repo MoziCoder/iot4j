@@ -11,9 +11,7 @@ import com.mozicoder.iot4j.utils.Hex;
 public class OptionValue
 {
 
-    protected   Object _value;
     protected  byte[] _pack ;
-    protected  int _length ;
 
     public   Object getValue(){
         return _pack;

@@ -150,6 +150,11 @@ public class BlockOptionValue extends OptionValue
             System.arraycopy(ByteStreamUtil.uint32ToBytes(code), 1, data, 0, data.length);
         }
         byte blockLog=(byte) Logarithm.log(_size, 2);
+        //最大值为7 11-4
+        if (blockLog >= (7 + 4))
+        {
+            blockLog = 11;
+        }
         data[data.length - 1] =(byte)(data[data.length - 1] |(blockLog>=4?(blockLog-4):(byte)0));
 
         if (_moreFlag)

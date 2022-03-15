@@ -32,6 +32,7 @@ public class CoAPClient extends CoAPPeer {
     private MessageCacheManager _cacheManager;
 
     private ResponseEvent _responseEvent;
+    private byte[] _token;
 
     //private char _remotePort = CoAPProtocol.Port;
     //private string _remotehost = "";
@@ -49,8 +50,18 @@ public class CoAPClient extends CoAPPeer {
     public CoAPClient() {
         _cacheManager = new MessageCacheManager(this);
         //配置本地服务口地址
+        _token=_cacheManager.generateToken(8);
     }
 
+    /**
+     * 设置Token
+     * @param token
+     * @return
+     */
+    public CoAPClient setToken(byte[] token){
+        _token=token;
+        return this;
+    }
     /**
      * 设置本地端口，默认为{@CoAPProtocol.Port}
      *
@@ -166,7 +177,7 @@ public class CoAPClient extends CoAPPeer {
         CoAPPackage cp = new CoAPPackage();
         cp.setCode(CoAPRequestMethod.Get);
         //DONE Token要实现一个生成器
-        cp.setToken(_cacheManager.generateToken(8));
+        cp.setToken(_token);
         //DONE MessageId的生成配合拥塞控制算法，此处指定为固定值
         cp.setMesssageId(_cacheManager.generateMessageId());
         cp.setMessageType(msgType == null ? CoAPMessageType.Confirmable : msgType);
@@ -228,7 +239,7 @@ public class CoAPClient extends CoAPPeer {
         CoAPPackage cp = new CoAPPackage();
         cp.setCode(CoAPRequestMethod.Post);
         //DONE Token要实现一个生成器
-        cp.setToken(_cacheManager.generateToken(8));
+        cp.setToken(_token);
         //DONE MessageId的生成配合拥塞控制算法，此处指定为固定值
         cp.setMesssageId(_cacheManager.generateMessageId());
         cp.setMessageType(msgType == null ? CoAPMessageType.Confirmable : msgType);
@@ -302,7 +313,7 @@ public class CoAPClient extends CoAPPeer {
         CoAPPackage cp = new CoAPPackage();
         cp.setCode(CoAPRequestMethod.Put);
         //DONE Token要实现一个生成器
-        cp.setToken(_cacheManager.generateToken(8));
+        cp.setToken(_token);
         //DONE MessageId的生成配合拥塞控制算法，此处指定为固定值
         cp.setMesssageId(_cacheManager.generateMessageId());
         cp.setMessageType(msgType == null ? CoAPMessageType.Confirmable : msgType);
@@ -358,7 +369,7 @@ public class CoAPClient extends CoAPPeer {
         CoAPPackage cp = new CoAPPackage();
         cp.setCode(CoAPRequestMethod.Delete);
         //DONE Token要实现一个生成器
-        cp.setToken(_cacheManager.generateToken(8));
+        cp.setToken(_token);
         //DONE MessageId的生成配合拥塞控制算法，此处指定为固定值
         cp.setMesssageId(_cacheManager.generateMessageId());
         cp.setMessageType(msgType == null ? CoAPMessageType.Confirmable : msgType);

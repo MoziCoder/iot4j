@@ -144,10 +144,12 @@ public class BlockOptionValue extends OptionValue
         {
             data = ByteStreamUtil.charToBytes((char)code.getValue());
         }
-        else
+        else if(_num.lt(1048576))
         {
             data = new byte[3];
             System.arraycopy(ByteStreamUtil.uint32ToBytes(code), 1, data, 0, data.length);
+        }else {
+            data = new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xF0};
         }
         byte blockLog=(byte) Logarithm.log(_size, 2);
         //最大值为7 11-4
@@ -167,7 +169,7 @@ public class BlockOptionValue extends OptionValue
     @Override
     public OptionValue setPack(byte[] pack) {
 
-        _size = (char)Math.pow(2, (((byte)((pack[pack.length-1] << 5))&0b11100000) >> 5) + 4);
+        _size = (char)Math.pow(2, (byte)(pack[pack.length-1]&0b00000111) + 4);
         _moreFlag = (pack[pack.length-1] & 8) == 8;
         byte[] data = new byte[4];
         System.arraycopy(pack, 0, data, data.length - pack.length, pack.length);

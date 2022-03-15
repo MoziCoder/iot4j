@@ -31,13 +31,12 @@ public class Main{
         try {
             ArrayList<CoAPOption> opts=new ArrayList<>();
             BlockOptionValue bv=new BlockOptionValue();
-            bv.setNum(new Uint32(1));
+            bv.setNum(new Uint32(10485777));
             bv.setMoreFlag(false);
             bv.setSize((char)128);
             CoAPOption cp=new CoAPOption();
             cp.setValue(bv);
             cp.setOption(CoAPOptionDefine.Block2);
-
             opts.add(cp);
             client.get("coap://coap.me/.well-known/core", CoAPMessageType.Confirmable,opts);
         }catch (Exception ex){

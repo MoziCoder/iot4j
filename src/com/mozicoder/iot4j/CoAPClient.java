@@ -1,7 +1,7 @@
 package com.mozicoder.iot4j;
 
 import com.mozicoder.iot4j.cache.MessageCacheManager;
-import com.mozicoder.iot4j.event.ResponseEvent;
+import com.mozicoder.iot4j.event.MessageTransmitEvent;
 import com.mozicoder.iot4j.utils.StringUtil;
 import com.mozicoder.iot4j.utils.UriInfo;
 import java.net.DatagramPacket;
@@ -31,7 +31,8 @@ public class CoAPClient extends CoAPPeer {
 
     private MessageCacheManager _cacheManager;
 
-    private ResponseEvent _responseEvent;
+    private MessageTransmitEvent _responseEvent,_requestEvent;
+
     private byte[] _token;
 
     //private char _remotePort = CoAPProtocol.Port;
@@ -77,10 +78,15 @@ public class CoAPClient extends CoAPPeer {
      * 设置Response回调事件
      * @param event
      */
-    public void setResponseListener(ResponseEvent event){
+    public void setResponseListener(MessageTransmitEvent event){
         _responseEvent=event;
     }
 
+    /**
+     * 发送数据回调
+     * @param event
+     */
+    public void setRequestListener(MessageTransmitEvent event){_requestEvent=event;}
     /**
      * 发送请求消息,此方法为高级方法。
      * 如果对协议不够了解，请不要调用。
@@ -96,6 +102,13 @@ public class CoAPClient extends CoAPPeer {
         if (pack.getMesssageId() == 0)
         {
             pack.setMesssageId(_cacheManager.generateMessageId());
+        }
+        try {
+            if (_requestEvent != null) {
+                _requestEvent.onTransmit(host, port, pack);
+            }
+        }catch (Exception ex){
+
         }
         return super.sendMessage(host,port,pack);
     }
@@ -417,7 +430,7 @@ public class CoAPClient extends CoAPPeer {
         CoAPPackage cp=CoAPPackage.parse(dp.getData(),CoAPPackageType.Response);
         System.out.println(cp.getCode().getDescription());
         if(_responseEvent!=null){
-            _responseEvent.onResponse(dp.getAddress().getHostAddress(),dp.getPort(),cp);
+            _responseEvent.onTransmit(dp.getAddress().getHostAddress(),dp.getPort(),cp);
         }
     }
 }

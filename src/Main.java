@@ -13,7 +13,7 @@ public class Main{
     public static void main(String[] args) throws IOException {
         CoAPClient client=new CoAPClient();
         //绑定本地端口
-        client.start(12345);
+        client.start(32325);
         //数据侦听回调
         client.setResponseListener(new MessageTransmitEvent() {
             @Override

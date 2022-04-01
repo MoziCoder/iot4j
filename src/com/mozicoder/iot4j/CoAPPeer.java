@@ -2,6 +2,7 @@ package com.mozicoder.iot4j;
 
 import com.mozicoder.iot4j.event.PackageReceiveEvent;
 
+import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -43,6 +44,8 @@ import java.util.TimeZone;
  *  </p>
  */
 public class CoAPPeer implements PackageReceiveEvent {
+
+    private Long _packetReceivedCount= 0L,_totalReceivedBytes= 0L,_packetSendCount=0l,_totalSendBytes=0l;
 
     private int _blockSize = 128;
 
@@ -152,7 +155,10 @@ public class CoAPPeer implements PackageReceiveEvent {
      * @returns MessageId
      */
     public  char sendMessage(String host, int port, CoAPPackage pack) {
-        _socket.sendTo(pack.pack(), host, port);
+        byte[] buffer = pack.pack();
+        _packetSendCount++;
+        _totalSendBytes+=buffer.length;
+        _socket.sendTo(buffer, host, port);
         return pack.getMesssageId();
     }
 //    /// <summary>
@@ -224,7 +230,41 @@ public class CoAPPeer implements PackageReceiveEvent {
      */
     @Override
     public void onPackageReceived(DatagramPacket dp) {
+        _packetReceivedCount++;
+        _totalReceivedBytes+=dp.getLength();
         CoAPPackage cp=CoAPPackage.parse(dp.getData(),CoAPPackageType.Request);
         System.out.println(cp.getCode().getDescription());
+    }
+
+    /**
+     * 获取累计接收包数量
+     * @return
+     */
+    public Long getPacketReceivedCount() {
+        return _packetReceivedCount;
+    }
+
+    /**
+     * 获取累计接收到字节数
+     * @return
+     */
+    public Long getTotalReceivedBytes() {
+        return _totalReceivedBytes;
+    }
+
+    /**
+     * 获取累计发送的包的数量
+     * @return
+     */
+    public Long getPacketSendCount() {
+        return _packetSendCount;
+    }
+
+    /**
+     * 获取累计发送的字节数
+     * @return
+     */
+    public Long getTotalSendBytes() {
+        return _totalSendBytes;
     }
 }

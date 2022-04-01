@@ -34,6 +34,7 @@ public class UriInfo
      * @return
      */
     public static UriInfo Parse(String url) {
+
         UriInfo uri = new UriInfo();
 
         String address = "", sPort = "", path = "";
@@ -62,11 +63,13 @@ public class UriInfo
             if(mtProto.find()) {
                 uri.Protocol = mtProto.group();
             }
+
             //分离域名和端口
             Matcher mtHost=regHost.matcher(url);
             if(mtHost.find()) {
                 address = mtHost.group();
             }
+
             //IPV4
             Matcher mtAddress=regIPV4.matcher(address);
             Matcher mtDomain=regDomain.matcher(address);
